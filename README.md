@@ -1,16 +1,25 @@
-# magnojet
+# 🌱 Aplicativo de Seleção de Pontas - MagnoJet
 
-A new Flutter project.
+Bem-vindo(a) ao **MagnoJet App** 🚀  
+Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de auxiliar **clientes e consultores** na **seleção das melhores pontas de pulverização** disponíveis no mercado.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 📱 Funcionalidades
+- 🔎 Seleção de pontas de pulverização de acordo com a necessidade do usuário.  
+- 📊 Exibição de informações técnicas detalhadas.  
+- 🌍 Suporte multiplataforma (Android & IOS).  
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ Tecnologias Utilizadas
+- [Flutter](https://flutter.dev/) (SDK 3.35.4)  
+- [Dart](https://dart.dev/)  
+- [Android Studio](https://developer.android.com/studio)  
+- [VS Code](https://code.visualstudio.com/)  
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## Autor
+
+Este projeto foi desenvolvido por [Felipe Paraizo](https://github.com/Fparaiz0) e está hospedado no repositório (https://github.com/Fparaiz0/app_magnojet).

@@ -12,9 +12,11 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias Utilizadas    
 - [Flutter](https://flutter.dev/) (SDK 3.35.4)  
-- [Dart](https://dart.dev/)  
+- [Dart](https://dart.dev/) 
+- [SQLite](https://sqlite.org/) 
+- [Firebase](https://firebase.google.com/)
 - [Android Studio](https://developer.android.com/studio)  
 - [VS Code](https://code.visualstudio.com/)  
 

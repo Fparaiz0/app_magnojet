@@ -12,11 +12,18 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
-- [Flutter](https://flutter.dev/) (SDK 3.35.4)  
-- [Dart](https://dart.dev/)  
-- [Android Studio](https://developer.android.com/studio)  
-- [VS Code](https://code.visualstudio.com/)  
+## 🛠️ Tecnologias Utilizadas    
+<table>
+  <tr>
+    <td><a href="https://flutter.dev/"><img alt="Flutter" title="Flutter" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg"/></a></td>
+    <td><a href="https://dart.dev/"><img alt="Dart" title="Dart" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/dart/dart-original.svg"/></a></td>
+    <td><a href="https://code.visualstudio.com/"><img alt="Visual Studio Code" title="Visual Studio Code" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg"/></a></td>
+    <td><a href="https://developer.android.com/studio"><img alt="Android Studio" title="Android Studio" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/androidstudio/androidstudio-original.svg"/></a></td>
+    <td><a href="https://firebase.google.com/"><img alt="Firebase" title="Firebase" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg"/></a></td>
+    <td><a href="https://www.sqlite.org/"><img alt="SQLite" title="SQLite" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sqlite/sqlite-original.svg"/></a></td>
+    <td><a href="https://git-scm.com/"><img alt="Git" title="Git" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg"/></a></td>
+  </tr>
+</table>
 
 ---
 

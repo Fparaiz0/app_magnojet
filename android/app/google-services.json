@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "548950969307",
+    "project_id": "magnojet-cdabf",
+    "storage_bucket": "magnojet-cdabf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548950969307:android:196f1f1dcd56de71d175fe",
+        "android_client_info": {
+          "package_name": "com.example.magnojet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcCFsy1ukfUKTXXCgaOb1vKHxpYd756Ok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

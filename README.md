@@ -17,7 +17,7 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 ## 🎨 Telas do Aplicativo
 
-<p align="center">
+<p align="center" valign="top" >
   <img src="images/page_singIn.jpeg" width="250" title="Tela de Login">
   <img src="images/page_singUp.jpeg" width="250" title="Tela de Cadastro">
   <img src="images/page_forgotPassword.jpeg" width="250" title="Tela de Recuperação de Senha">
@@ -43,7 +43,7 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 Este projeto foi desenvolvido por **Felipe Paraizo**.
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Felipe_Paraizo-0077B5?style=for-the-badge&logo=linkedin )](https://www.linkedin.com/in/felipe-paraizo-235b89230/ )
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Felipe_Paraizo-0077B5?style=for-the-badge&logo=linkedin )](https://www.linkedin.com/in/felipe-paraizo-de-oliveira-45882431a/)
 [![GitHub](https://img.shields.io/badge/GitHub-Fparaiz0-181717?style=for-the-badge&logo=github )](https://github.com/Fparaiz0 )
 
 O código-fonte está hospedado neste repositório: [github.com/Fparaiz0/app_magnojet](https://github.com/Fparaiz0/app_magnojet )

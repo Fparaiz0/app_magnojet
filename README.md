@@ -18,9 +18,9 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 ## 🎨 Telas do Aplicativo
 
 <p align="center" valign="top" >
-  <img src="assets/images/page_singIn.jpeg" width="250" title="Tela de Login">
-  <img src="assets/images/page_singUp.jpeg" width="251" title="Tela de Cadastro">
-  <img src="assets/images/page_forgotPassword.jpeg" width="250" title="Tela de Recuperação de Senha">
+  <img src="assets/images/page_singIn.png" width="250" title="Tela de Login">
+  <img src="assets/images/page_singUp.png" width="250" title="Tela de Cadastro">
+  <img src="assets/images/page_forgotPassword.png" width="250" title="Tela de Recuperação de Senha">
 </p>
 
 ---

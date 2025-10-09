@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart'; // 1. Importe o Firebase Auth
 import 'home_page.dart'; // 2. Importe a tela para onde o usuário irá após o login
 import 'signup_page.dart'; // Importa a tela de cadastro
 
-// O seu main.dart e MyApp permanecem os mesmos, desde que o Firebase.initializeApp() esteja lá.
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -13,7 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // --- LÓGICA ADICIONADA ---
   // 3. Controladores para obter os valores dos campos de texto
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -73,7 +70,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
-  // --- FIM DA LÓGICA ADICIONADA ---
 
   // Função para iniciar o processo de redefinição de senha
   Future<void> _resetPassword(String email) async {
@@ -352,7 +348,7 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-            ),
+            ), 
           ),
         ),
       ),

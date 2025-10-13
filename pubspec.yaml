@@ -51,9 +51,6 @@ flutter_launcher_icons:
   # Define o logo como a imagem de primeiro plano
   adaptive_icon_foreground: "assets/icon_normal.png"
 
-# -------------------------------------------------------------------
-# CONFIGURAÇÕES DO FLUTTER
-# -------------------------------------------------------------------
 flutter:
   uses-material-design: true
 

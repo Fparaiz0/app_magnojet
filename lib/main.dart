@@ -3,8 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'firebase_options.dart'; // Arquivo de configuração do Firebase
-import 'login_page.dart';       // tela de login
-import 'task_page.dart';        // A tela de tarefas offline-first com real-time sync
+import 'login_page.dart'; // tela de login
+import 'task_page.dart'; // A tela de tarefas offline-first com real-time sync
 
 void main() async {
   // Garante que todos os bindings do Flutter estejam prontos
@@ -62,7 +62,7 @@ class AuthGate extends StatelessWidget {
 
         if (snapshot.hasData) {
           // Usuário está logado, mostra a página de tarefas
-          return const TaskPage();  
+          return const TaskPage();
         } else {
           // Usuário não está logado, mostra a página de login
           return const LoginPage();

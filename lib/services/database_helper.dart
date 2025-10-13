@@ -7,7 +7,8 @@ class DatabaseHelper {
 
   static const table = 'tasks';
   static const columnId = 'id'; // ID local
-  static const columnFirestoreId = 'firestoreId'; // ID do documento no Firestore
+  static const columnFirestoreId =
+      'firestoreId'; // ID do documento no Firestore
   static const columnTitle = 'title';
   static const columnIsDone = 'isDone';
   static const columnIsSynced = 'isSynced';

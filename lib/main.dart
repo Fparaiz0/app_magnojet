@@ -3,8 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'firebase_options.dart'; // Arquivo de configuração do Firebase
-import 'login_page.dart';       // tela de login
-import 'task_page.dart';        // A tela de tarefas offline-first com real-time sync
+import 'login_page.dart'; // tela de login
+import 'task_page.dart'; // A tela de tarefas offline-first com real-time sync
 
 void main() async {
   // Garante que todos os bindings do Flutter estejam prontos
@@ -27,12 +27,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'MagnoJet',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 3, 6, 209)),
-      appBarTheme: const AppBarTheme(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 3, 6, 209)),
+        appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromRGBO(6, 2, 190, 1),
           foregroundColor: Colors.white,
-        ),  useMaterial3: true,
-        
+        ),
+        useMaterial3: true,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 3, 6, 209),

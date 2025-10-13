@@ -46,8 +46,7 @@ class TaskRepository {
                 DatabaseHelper.columnTitle: data['title'] ?? '',
                 DatabaseHelper.columnIsDone: (data['isDone'] ?? false) ? 1 : 0,
                 DatabaseHelper.columnIsSynced: 1,
-
-                'userId': data['userId'], 
+                'userId': data['userId'],
               };
             }).toList());
   }
@@ -64,7 +63,8 @@ class TaskRepository {
     final unsyncedTasks = await dbHelper.queryUnsynced();
     if (unsyncedTasks.isEmpty) return;
 
-    final tasksCollection = _firestore.collection('users').doc(user.uid).collection('tasks');
+    final tasksCollection =
+        _firestore.collection('users').doc(user.uid).collection('tasks');
     final writeFutures = <Future<void>>[];
     final idsToDelete = <int>[];
 
@@ -73,8 +73,8 @@ class TaskRepository {
         'title': task[DatabaseHelper.columnTitle],
         'isDone': task[DatabaseHelper.columnIsDone] == 1,
         'createdAt': FieldValue.serverTimestamp(),
-        'userId': user.uid, 
-        'userEmail': user.email, 
+        'userId': user.uid,
+        'userEmail': user.email,
       }));
       idsToDelete.add(task[DatabaseHelper.columnId] as int);
     }
@@ -84,7 +84,8 @@ class TaskRepository {
       final db = await dbHelper.database;
       final batch = db.batch();
       for (var id in idsToDelete) {
-        batch.delete(DatabaseHelper.table, where: '${DatabaseHelper.columnId} = ?', whereArgs: [id]);
+        batch.delete(DatabaseHelper.table,
+            where: '${DatabaseHelper.columnId} = ?', whereArgs: [id]);
       }
       await batch.commit(noResult: true);
     } catch (e) {

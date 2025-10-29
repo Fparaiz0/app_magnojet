@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'task_page.dart'; 
+import 'task_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -13,9 +13,10 @@ class _SignUpPageState extends State<SignUpPage> {
   // Controladores para os campos de texto
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -33,7 +34,9 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    setState(() { _isLoading = true; });
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
       // Usa o método do Firebase para criar um usuário
@@ -62,7 +65,7 @@ class _SignUpPageState extends State<SignUpPage> {
       } else {
         message = 'Ocorreu um erro. Tente novamente.';
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
@@ -70,7 +73,9 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     } finally {
       if (mounted) {
-        setState(() { _isLoading = false; });
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -92,7 +97,7 @@ class _SignUpPageState extends State<SignUpPage> {
         elevation: 0,
         foregroundColor: Colors.white,
       ),
-      extendBodyBehindAppBar: true, 
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -105,7 +110,8 @@ class _SignUpPageState extends State<SignUpPage> {
           child: SingleChildScrollView(
             child: Card(
               elevation: 8,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
               margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
               child: Padding(
                 padding: const EdgeInsets.all(25),
@@ -113,12 +119,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Logo
-                    Image.asset('assets/logo.png', height: 80), 
+                    Image.asset('assets/logo.png', height: 80),
                     const SizedBox(height: 15),
                     const Text(
                       "Cadastrar",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
 
@@ -128,7 +135,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: "Email",
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15)),
                       ),
                     ),
                     const SizedBox(height: 15),
@@ -139,10 +147,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         labelText: "Senha",
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15)),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(_obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword),
                         ),
                       ),
                     ),
@@ -154,10 +166,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       obscureText: _obscureConfirmPassword,
                       decoration: InputDecoration(
                         labelText: "Confirmar Senha",
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15)),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          icon: Icon(_obscureConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () => setState(() =>
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword),
                         ),
                       ),
                     ),
@@ -167,13 +184,16 @@ class _SignUpPageState extends State<SignUpPage> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade700,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       onPressed: _isLoading ? null : _signUp,
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("Cadastrar", style: TextStyle(fontSize: 18, color: Colors.white)),
+                          : const Text("Cadastrar",
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white)),
                     ),
                   ],
                 ),

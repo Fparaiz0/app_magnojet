@@ -13,7 +13,7 @@ class TaskPage extends StatefulWidget {
 class _TaskPageState extends State<TaskPage> {
   final TaskRepository _repository = TaskRepository();
   final TextEditingController _textController = TextEditingController();
-  
+
   // Lista temporária APENAS para itens adicionados offline nesta sessão.
   final List<Map<String, dynamic>> _pendingLocalTasks = [];
 
@@ -43,7 +43,7 @@ class _TaskPageState extends State<TaskPage> {
   void _addTask() async {
     if (_textController.text.isNotEmpty) {
       final String taskTitle = _textController.text;
-      
+
       // Cria uma representação visual IMEDIATA da tarefa.
       final localTask = {
         'title': taskTitle,
@@ -56,7 +56,7 @@ class _TaskPageState extends State<TaskPage> {
       });
 
       _textController.clear();
-      
+
       // Envia para o repositório para salvar e sincronizar em segundo plano.
       await _repository.addTask(taskTitle);
     }
@@ -98,21 +98,26 @@ class _TaskPageState extends State<TaskPage> {
             child: StreamBuilder<List<Map<String, dynamic>>>(
               stream: _repository.getFirestoreTasksStream(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting && _pendingLocalTasks.isEmpty) {
+                if (snapshot.connectionState == ConnectionState.waiting &&
+                    _pendingLocalTasks.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Erro: ${snapshot.error}'));
                 }
-                
+
                 final firestoreTasks = snapshot.data ?? [];
-                
+
                 // Combinação Visual: Remove da lista local pendente qualquer item que já chegou do Firestore.
                 _pendingLocalTasks.removeWhere((local) {
-                  return firestoreTasks.any((remote) => remote['title'] == local['title']);
+                  return firestoreTasks
+                      .any((remote) => remote['title'] == local['title']);
                 });
 
-                final combinedTasks = [...firestoreTasks, ..._pendingLocalTasks];
+                final combinedTasks = [
+                  ...firestoreTasks,
+                  ..._pendingLocalTasks
+                ];
 
                 if (combinedTasks.isEmpty) {
                   return const Center(child: Text("Nenhuma tarefa."));
@@ -126,7 +131,9 @@ class _TaskPageState extends State<TaskPage> {
                     return ListTile(
                       title: Text(task['title'].toString()),
                       trailing: Icon(
-                        isSynced ? Icons.cloud_done : Icons.cloud_upload_outlined,
+                        isSynced
+                            ? Icons.cloud_done
+                            : Icons.cloud_upload_outlined,
                         color: isSynced ? Colors.green : Colors.grey,
                       ),
                     );

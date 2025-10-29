@@ -10,7 +10,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  // Controladores para os campos de texto
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -21,10 +20,8 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  // Função para lidar com o cadastro de um novo usuário
   Future<void> _signUp() async {
     if (_passwordController.text != _confirmPasswordController.text) {
-      // Se as senhas não forem iguais, mostre um erro
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("As senhas não correspondem!"),
@@ -39,22 +36,19 @@ class _SignUpPageState extends State<SignUpPage> {
     });
 
     try {
-      // Usa o método do Firebase para criar um usuário
       await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Se o cadastro for bem-sucedido, navega para a TaskPage
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const TaskPage()),
-          (route) => false, // Remove todas as rotas anteriores (login/cadastro)
+          (route) => false,
         );
       }
     } on FirebaseAuthException catch (e) {
-      // Trata erros específicos do Firebase
       String message;
       if (e.code == 'weak-password') {
         message = 'A senha fornecida é muito fraca.';
@@ -118,7 +112,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Logo
                     Image.asset('assets/logo.png', height: 80),
                     const SizedBox(height: 15),
                     const Text(
@@ -128,8 +121,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
-
-                    // Email
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -140,8 +131,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
-
-                    // Senha
                     TextField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
@@ -159,8 +148,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
-
-                    // Confirmar Senha
                     TextField(
                       controller: _confirmPasswordController,
                       obscureText: _obscureConfirmPassword,
@@ -179,8 +166,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Botão Cadastrar
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade700,

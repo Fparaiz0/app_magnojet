@@ -11,28 +11,23 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // 3. Controladores para obter os valores dos campos de texto
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FirebaseAuth _auth =
-      FirebaseAuth.instance; // Instância do Firebase Auth
-  bool _isLoading = false; // Para mostrar um indicador de carregamento
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
 
-  // 4. Função assíncrona para lidar com o login
   Future<void> _login() async {
     if (!mounted) return;
     setState(() {
-      _isLoading = true; // Ativa o indicador de carregamento
+      _isLoading = true;
     });
 
     try {
-      // Tenta fazer o login com o Firebase
       await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Se o login for bem-sucedido, navega para a HomePage
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -40,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } on FirebaseAuthException catch (e) {
-      // Trata os erros de login e mostra uma mensagem
       String message;
       switch (e.code) {
         case 'user-not-found':
@@ -62,7 +56,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } finally {
-      // Garante que o indicador de carregamento seja desativado
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -70,9 +63,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
-  // --- FIM DA LÓGICA ADICIONADA ---
 
-  // Função para iniciar o processo de redefinição de senha
   Future<void> _resetPassword(String email) async {
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,10 +80,8 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      // Método do Firebase para enviar o e-mail de redefinição
       await _auth.sendPasswordResetEmail(email: email.trim());
 
-      // Feedback de sucesso para o usuário
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -113,11 +102,10 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _isLoading = false;
       });
-      Navigator.of(context).pop(); // Fecha a caixa de diálogo
+      Navigator.of(context).pop();
     }
   }
 
-  // Função para mostrar a caixa de diálogo de redefinição de senha
   void _showPasswordResetDialog() {
     final TextEditingController emailController = TextEditingController();
 
@@ -148,13 +136,11 @@ class _LoginPageState extends State<LoginPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.of(context).pop(), // Botão para cancelar
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text("Cancelar"),
             ),
             ElevatedButton(
               onPressed: () {
-                // Chama a função de redefinição com o e-mail digitado
                 _resetPassword(emailController.text);
               },
               child: const Text("Enviar"),
@@ -170,7 +156,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    // 5. Limpa os controladores quando o widget for descartado
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -200,10 +185,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Logo
                     Image.asset('assets/logo.png', height: 80),
                     const SizedBox(height: 15),
-
                     const Text(
                       "Login",
                       textAlign: TextAlign.center,
@@ -220,10 +203,8 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(color: Colors.black54),
                     ),
                     const SizedBox(height: 20),
-
-                    // Email
                     TextField(
-                      controller: _emailController, // 6. Conecta o controlador
+                      controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.email_outlined),
@@ -234,11 +215,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
-
-                    // Senha
                     TextField(
-                      controller:
-                          _passwordController, // 7. Conecta o controlador
+                      controller: _passwordController,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.lock_outline),
@@ -261,8 +239,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Botão Logar
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade700,
@@ -271,12 +247,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
-                      onPressed: _isLoading
-                          ? null
-                          : _login, // 8. Chama a função _login
+                      onPressed: _isLoading ? null : _login,
                       child: _isLoading
                           ? const SizedBox(
-                              // Mostra um círculo de progresso
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
@@ -292,17 +265,12 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                     ),
-
                     const SizedBox(height: 10),
-                    // Esqueceu senha
                     TextButton(
-                      onPressed: _isLoading
-                          ? null
-                          : _showPasswordResetDialog, // Chama a função da caixa de diálogo
+                      onPressed: _isLoading ? null : _showPasswordResetDialog,
                       child: const Text("Esqueceu sua senha?"),
                     ),
                     const SizedBox(height: 10),
-                    // Botão cadastrar
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -311,7 +279,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       onPressed: () {
-                        // Navega para a tela de cadastro
                         Navigator.push(
                           context,
                           MaterialPageRoute(

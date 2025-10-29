@@ -14,13 +14,11 @@ class _TaskPageState extends State<TaskPage> {
   final TaskRepository _repository = TaskRepository();
   final TextEditingController _textController = TextEditingController();
 
-  // Lista temporária APENAS para itens adicionados offline nesta sessão.
   final List<Map<String, dynamic>> _pendingLocalTasks = [];
 
   @override
   void initState() {
     super.initState();
-    // Carrega os itens pendentes de sessões anteriores.
     _loadInitialPendingTasks();
   }
 
@@ -44,20 +42,17 @@ class _TaskPageState extends State<TaskPage> {
     if (_textController.text.isNotEmpty) {
       final String taskTitle = _textController.text;
 
-      // Cria uma representação visual IMEDIATA da tarefa.
       final localTask = {
         'title': taskTitle,
         'isSynced': 0,
       };
 
-      // Adiciona à lista local da UI e chama setState.
       setState(() {
         _pendingLocalTasks.add(localTask);
       });
 
       _textController.clear();
 
-      // Envia para o repositório para salvar e sincronizar em segundo plano.
       await _repository.addTask(taskTitle);
     }
   }
@@ -108,7 +103,6 @@ class _TaskPageState extends State<TaskPage> {
 
                 final firestoreTasks = snapshot.data ?? [];
 
-                // Combinação Visual: Remove da lista local pendente qualquer item que já chegou do Firestore.
                 _pendingLocalTasks.removeWhere((local) {
                   return firestoreTasks
                       .any((remote) => remote['title'] == local['title']);

@@ -2,13 +2,13 @@ name: magnojet
 description: "A new Flutter project."
 
 # A linha 'publish_to: none' impede a publicação acidental no pub.dev.
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
   # Faixa de versões do SDK do Dart compatível com as versões atuais do Flutter.
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -59,3 +59,4 @@ flutter:
     - assets/logo.png
     - assets/icon_normal.png
     - assets/icon_monochromatic.png
+    - assets/logo_branca.png

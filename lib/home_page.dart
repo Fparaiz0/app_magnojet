@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_page.dart';
 import '../services/firestore_service.dart';
+import 'tip_selection_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,7 +15,7 @@ class _HomePageState extends State<HomePage> {
   String _selectedDrawerItem = 'Início';
   final User? user = FirebaseAuth.instance.currentUser;
   final FirestoreService _firestoreService = FirestoreService();
-  String _userName = 'Operador';
+  String _userName = '';
   bool _isLoading = true;
 
   @override
@@ -287,7 +288,15 @@ class _HomePageState extends State<HomePage> {
                       _buildDrawerItem(
                         icon: Icons.search_rounded,
                         title: 'Selecionar Pontas',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TipSelectionPage(),
+                            ),
+                          );
+                        },
                       ),
                       _buildDrawerItem(
                         icon: Icons.calculate_rounded,
@@ -433,7 +442,14 @@ class _HomePageState extends State<HomePage> {
                         icon: Icons.search_rounded,
                         title: 'Selecionar\nPontas',
                         color: const Color(0xFF15325A),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TipSelectionPage(),
+                            ),
+                          );
+                        },
                       ),
                       _buildFeatureCard(
                         icon: Icons.calculate_rounded,

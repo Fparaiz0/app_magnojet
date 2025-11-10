@@ -5,7 +5,7 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 ---
 
-## 📱 Funcionalidades
+# 📱 Funcionalidades
 
 - 🔎 **Seleção Inteligente:** Encontre as pontas de pulverização ideais para suas necessidades.
 - 📊 **Informações Técnicas:** Acesse dados detalhados e especificações de cada produto.
@@ -15,17 +15,22 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 ---
 
-## 🎨 Telas do Aplicativo
+# 🎨 Telas do Aplicativo
 
-<p align="center" valign="top" >
-  <img src="assets/images/page_singIn.png" width="250" title="Tela de Login">
-  <img src="assets/images/page_singUp.png" width="250" title="Tela de Cadastro">
-  <img src="assets/images/page_forgotPassword.png" width="250" title="Tela de Recuperação de Senha">
-</p>
+  <p align="center" valign="top" >
+    <img src="assets/images/page_singIn.png" width="250" title="Tela de Login">
+    <img src="assets/images/page_singUp.png" width="250" title="Tela de Cadastro">
+    <img src="assets/images/page_forgotPassword.png" width="250" title="Tela de Recuperação de Senha">
+  </p>
+  <p align="center" valign="top" >
+    <img src="assets/images/page_home.png" width="250" title="Tela Inicial">
+    <img src="assets/images/drawer.png" width="250" title="Drawer">
+    <img src="assets/images/page_tip_selection.png" width="250" title="Tela de Seleção de pontas">
+  </p>
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+# 🛠️ Tecnologias Utilizadas
 
 <p align="center">
   <a href="https://flutter.dev/"><img alt="Flutter" title="Flutter" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg"/></a>
@@ -44,7 +49,7 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 ---
 
-## 👨‍💻 Autor
+# 👨‍💻 Autor
 
 Este projeto foi desenvolvido por **Felipe Paraizo**.
 

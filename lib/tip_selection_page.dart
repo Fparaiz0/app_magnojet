@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});
@@ -11,11 +12,9 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
 
-  // Valores iniciais
   double _pressure = 3.0;
   double _flowRate = 0.8;
 
-  // Seleções
   String? _selectedApplicationType = 'Aplicação em Solo';
   String? _selectedApplication = 'Herbicida';
   String? _selectedActionMode = 'Sistemico';
@@ -24,18 +23,16 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   bool _showResults = false;
   bool _isLoading = false;
 
-  // Constantes
   static const primaryColor = Color(0xFF15325A);
   static const secondaryColor = Color(0xFFE8F0F8);
   static const accentColor = Color(0xFF4CAF50);
 
-  // Dados
   final List<Map<String, dynamic>> _applicationTypes = [
     {'name': 'Florestal', 'icon': Icons.forest_rounded},
-    {'name': 'Aplicação Seletiva', 'icon': Icons.tune_rounded},
+    {'name': 'Aplicação Seletiva', 'icon': Icons.my_location_rounded},
     {'name': 'Área Total', 'icon': Icons.grass_rounded},
-    {'name': 'Barra Curta', 'icon': Icons.auto_awesome_motion_rounded},
-    {'name': 'Conforto Termico', 'icon': Icons.thermostat_rounded},
+    {'name': 'Barra Curta', 'icon': Icons.water_drop_rounded},
+    {'name': 'Conforto Térmico', 'icon': MdiIcons.cow},
     {
       'name': 'Turbo Atomizador',
       'icon': Icons.settings_input_component_rounded
@@ -54,7 +51,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     {'name': 'Não se aplica', 'icon': Icons.cancel_rounded},
   ];
 
-  // Métodos
   Future<void> _searchTips() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -63,7 +59,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       _showResults = false;
     });
 
-    // Simula busca assíncrona
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (!mounted) return;
@@ -73,7 +68,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       _showResults = true;
     });
 
-    // Scroll para resultados
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
@@ -122,7 +116,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         width: width,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? primaryColor.withOpacity(0.1) : Colors.white,
+          color:
+              isSelected ? primaryColor.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? primaryColor : Colors.grey.shade300,
@@ -131,14 +126,14 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: primaryColor.withOpacity(0.2),
+                    color: primaryColor.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
                 ]
               : [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 1),
                   )
@@ -171,7 +166,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 style: TextStyle(
                   fontSize: 10,
                   color: isSelected
-                      ? primaryColor.withOpacity(0.8)
+                      ? primaryColor.withValues(alpha: 0.8)
                       : Colors.grey.shade600,
                   fontWeight: FontWeight.w500,
                 ),
@@ -219,9 +214,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.05),
+                  color: primaryColor.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: primaryColor.withOpacity(0.3)),
+                  border:
+                      Border.all(color: primaryColor..withValues(alpha: 0.3)),
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.remove, color: primaryColor),
@@ -236,9 +232,9 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                   decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.05),
+                    color: primaryColor.withValues(alpha: 0.05),
                     border: Border.all(
-                        color: primaryColor.withOpacity(0.3), width: 1),
+                        color: primaryColor.withValues(alpha: 0.3), width: 1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -253,9 +249,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.05),
+                  color: primaryColor.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: primaryColor.withOpacity(0.3)),
+                  border:
+                      Border.all(color: primaryColor.withValues(alpha: 0.3)),
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.add, color: primaryColor),
@@ -312,7 +309,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: primaryColor.withOpacity(0.1),
+        color: primaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
@@ -361,10 +358,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       decoration: BoxDecoration(
         color: secondaryColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: primaryColor.withOpacity(0.2)),
+        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.1),
+            color: primaryColor.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -436,12 +433,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded,
                     size: 16, color: Colors.grey),
-                onTap: () {
-                  // Navegar para detalhes da ponta
-                },
+                onTap: () {},
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 8),
           Center(
             child: TextButton.icon(
@@ -491,7 +486,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     final cardPadding = 20.0 * 2;
     final availableWidth = screenWidth - padding - cardPadding;
 
-    // Larguras calculadas
     final buttonWidth3Col = (availableWidth - (12 * 2)) / 3;
 
     return Scaffold(
@@ -541,7 +535,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Tipo de Aplicação
                     Card(
                       elevation: 2,
                       shape: RoundedRectangleBorder(
@@ -583,8 +576,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                         ),
                       ),
                     ),
-
-                    // Aplicação, Modo de Ação e PWM
                     Card(
                       elevation: 2,
                       shape: RoundedRectangleBorder(
@@ -600,8 +591,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                 Icons.filter_alt_rounded,
                                 subtitle:
                                     'Configure os parâmetros da aplicação'),
-
-                            // Seção de Aplicação
                             const Text(
                               'Tipo de Aplicação',
                               style: TextStyle(
@@ -633,8 +622,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                               }).toList(),
                             ),
                             const SizedBox(height: 20),
-
-                            // MODIFICAÇÃO: Modo de Ação e PWM na mesma linha - sem texto "Ativo/Inativo"
                             const Text(
                               'Modo de Ação & PWM',
                               style: TextStyle(
@@ -646,7 +633,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                // Modos de Ação - 3 botões
                                 ..._actionModes.map((mode) {
                                   return Expanded(
                                     child: Container(
@@ -665,9 +651,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                       ),
                                     ),
                                   );
-                                }).toList(),
-
-                                // MODIFICAÇÃO: PWM como botão simples sem subtítulo
+                                }),
                                 Expanded(
                                   child: Container(
                                     margin: const EdgeInsets.only(left: 8),
@@ -690,8 +674,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                         ),
                       ),
                     ),
-
-                    // Parâmetros Numéricos
                     Card(
                       elevation: 2,
                       shape: RoundedRectangleBorder(
@@ -731,20 +713,13 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                         ),
                       ),
                     ),
-
-                    // Loading Indicator
                     _buildLoadingIndicator(),
-
-                    // Resultados
                     _buildResultSection(),
-
                     const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
-
-            // Botão de Busca
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -752,7 +727,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 border: Border(top: BorderSide(color: Colors.grey.shade200)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),

@@ -82,6 +82,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
 
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(

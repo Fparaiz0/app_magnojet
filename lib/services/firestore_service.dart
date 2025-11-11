@@ -1,6 +1,9 @@
 // lib/services/firestore_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_data.dart';
+import 'package:logger/logger.dart';
+
+final _logger = Logger();
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -32,8 +35,8 @@ class FirestoreService {
         return UserData.fromFirestore(docSnapshot.data()!);
       }
       return null;
-    } catch (e) {
-      print("Erro ao buscar dados do usuário: $e");
+    } catch (e, s) {
+      _logger.e('Erro ao buscar dados', error: e, stackTrace: s);
       return null;
     }
   }

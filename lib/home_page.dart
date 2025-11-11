@@ -108,7 +108,9 @@ class _HomePageState extends State<HomePage> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.white.withOpacity(0.15) : Colors.transparent,
+        color: isSelected
+            ? Colors.white.withValues(alpha: 0.15)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(6),
       ),
       child: ListTile(
@@ -394,11 +396,11 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: const Color(0xFF15325A).withOpacity(0.2),
+                          color: const Color(0xFF15325A).withValues(alpha: 0.2),
                           width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.15),
+                          color: Colors.grey.withValues(alpha: 0.15),
                           blurRadius: 16,
                           offset: const Offset(0, 8),
                         ),

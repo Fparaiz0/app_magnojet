@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home_page.dart';
-import '../services/firestore_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -11,13 +10,11 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirestoreService _firestoreService = FirestoreService();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final supabase = Supabase.instance.client;
 
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -44,63 +41,44 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
+      final response = await supabase.auth.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      if (userCredential.user != null) {
-        await _firestoreService.saveUserData(
-          uid: userCredential.user!.uid,
-          email: _emailController.text.trim(),
-          name: _nameController.text.trim(),
-        );
-      }
+      final user = response.user;
 
-      if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-          (route) => false,
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      String message;
-      if (e.code == 'weak-password') {
-        message = 'A senha fornecida é muito fraca.';
-      } else if (e.code == 'email-already-in-use') {
-        message = 'Este e-mail já está em uso por outra conta.';
-      } else if (e.code == 'invalid-email') {
-        message = 'O formato do e-mail é inválido.';
-      } else {
-        message = 'Ocorreu um erro. Tente novamente.';
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Erro ao cadastrar: $e'),
-              backgroundColor: Colors.redAccent),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
+      if (user != null) {
+        await supabase.from('users').insert({
+          'id': user.id,
+          'email': _emailController.text.trim(),
+          'name': _nameController.text.trim(),
         });
+
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const HomePage()),
+            (route) => false,
+          );
+        }
       }
+    } on AuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: Colors.redAccent),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao cadastrar: $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

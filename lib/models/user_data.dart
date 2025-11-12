@@ -1,34 +1,31 @@
-// lib/models/user_data.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserData {
-  final String uid;
+  final String id;
   final String email;
   final String name;
   final DateTime createdAt;
 
   UserData({
-    required this.uid,
+    required this.id,
     required this.email,
     required this.name,
     required this.createdAt,
   });
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toJson() {
     return {
-      "uid": uid,
-      "email": email,
-      "name": name,
-      "createdAt": Timestamp.fromDate(createdAt),
+      'id': id,
+      'email': email,
+      'name': name,
+      'created_at': createdAt.toIso8601String(),
     };
   }
 
-  factory UserData.fromFirestore(Map<String, dynamic> data) {
+  factory UserData.fromJson(Map<String, dynamic> data) {
     return UserData(
-      uid: data['uid'] as String,
+      id: data['id'] as String,
       email: data['email'] as String,
       name: data['name'] as String,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt: DateTime.parse(data['created_at']),
     );
   }
 }

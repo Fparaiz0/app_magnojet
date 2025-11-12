@@ -32,6 +32,8 @@ dependencies:
   # Dependências para conectividade e programação reativa.
   connectivity_plus: ^7.0.0
   rxdart: ^0.28.0
+  supabase_flutter: ^2.10.3
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -63,3 +65,4 @@ flutter:
     - assets/icon_normal.png
     - assets/icon_monochromatic.png
     - assets/logo_branca.png
+    - .env

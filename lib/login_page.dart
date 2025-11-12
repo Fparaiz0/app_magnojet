@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home_page.dart';
 import 'signup_page.dart';
 
@@ -13,54 +13,40 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final supabase = Supabase.instance.client;
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  String _selectedLanguage = "Português";
 
   Future<void> _login() async {
     if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      await _auth.signInWithEmailAndPassword(
+      final response = await supabase.auth.signInWithPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      if (mounted) {
+      if (response.user != null && mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomePage()),
         );
       }
-    } on FirebaseAuthException catch (e) {
-      String message;
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'Nenhum usuário encontrado para este e-mail.';
-          break;
-        case 'wrong-password':
-          message = 'Senha incorreta. Tente novamente.';
-          break;
-        case 'invalid-email':
-          message = 'O formato do e-mail é inválido.';
-          break;
-        default:
-          message = 'Ocorreu um erro. Verifique suas credenciais.';
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
-        );
-      }
+    } on AuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: Colors.redAccent),
+      );
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Erro inesperado. Tente novamente."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -75,36 +61,27 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      await _auth.sendPasswordResetEmail(email: email.trim());
-
+      await supabase.auth.resetPasswordForEmail(email.trim());
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            "Link para redefinição de senha enviado para o seu e-mail!",
-          ),
+          content: Text("Link de redefinição enviado para seu e-mail!"),
           backgroundColor: Colors.green,
         ),
       );
-    } on FirebaseAuthException catch (e) {
-      String message = "Ocorreu um erro. Tente novamente.";
-      if (e.code == 'user-not-found') {
-        message = "Nenhum usuário encontrado para este e-mail.";
-      }
+    } on AuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
+        SnackBar(content: Text(e.message), backgroundColor: Colors.redAccent),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
+      if (mounted) {
+        setState(() => _isLoading = false);
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -123,8 +100,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                "Digite seu e-mail para receber um link de redefinição.",
-              ),
+                  "Digite seu e-mail para receber um link de redefinição."),
               const SizedBox(height: 15),
               TextField(
                 controller: emailController,
@@ -152,9 +128,6 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-
-  bool _obscurePassword = true;
-  String _selectedLanguage = "Português";
 
   @override
   void dispose() {

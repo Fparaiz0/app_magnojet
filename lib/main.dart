@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'firebase_options.dart';
 import 'login_page.dart';
 import 'home_page.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await dotenv.load(fileName: ".env");
+
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+  if (supabaseUrl == null || supabaseAnonKey == null) {
+    throw Exception(
+        "Faltam SUPABASE_URL ou SUPABASE_ANON_KEY no arquivo .env.");
+  }
+
+  await Supabase.initialize(
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   runApp(const MyApp());
@@ -43,26 +53,42 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+  State<AuthGate> createState() => _AuthGateState();
+}
 
-        if (snapshot.hasData) {
-          return const HomePage();
-        } else {
-          return const LoginPage();
-        }
-      },
-    );
+class _AuthGateState extends State<AuthGate> {
+  final supabase = Supabase.instance.client;
+  bool _isLoading = true;
+  Session? _session;
+
+  @override
+  void initState() {
+    super.initState();
+
+    supabase.auth.onAuthStateChange.listen((data) {
+      setState(() {
+        _session = data.session;
+        _isLoading = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_session != null) {
+      return const HomePage();
+    }
+
+    return const LoginPage();
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login_page.dart';
-import '../services/firestore_service.dart';
 import 'tip_selection_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,8 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _selectedDrawerItem = 'Início';
-  final User? user = FirebaseAuth.instance.currentUser;
-  final FirestoreService _firestoreService = FirestoreService();
+  final supabase = Supabase.instance.client;
   String _userName = '';
   bool _isLoading = true;
 
@@ -25,20 +23,33 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadUserData() async {
-    if (user != null) {
-      final userData = await _firestoreService.getUserData(user!.uid);
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    try {
+      final response = await supabase
+          .from('users')
+          .select('name')
+          .eq('id', user.id)
+          .maybeSingle();
+
       if (mounted) {
         setState(() {
-          if (userData != null) {
-            _userName = userData.name.split(' ').first;
-          }
+          _userName = (response?['name'] ?? 'Usuário').split(' ').first;
           _isLoading = false;
         });
       }
-    } else if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar usuário: $e')),
+        );
+      }
     }
   }
 
@@ -51,7 +62,8 @@ class _HomePageState extends State<HomePage> {
     );
 
     try {
-      await FirebaseAuth.instance.signOut();
+      await Supabase.instance.client.auth.signOut();
+
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -159,11 +171,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: 36,
-                color: color,
-              ),
+              Icon(icon, size: 36, color: color),
               const SizedBox(height: 8),
               Text(
                 title,
@@ -183,6 +191,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = supabase.auth.currentUser;
     String displayUserName = _userName.toUpperCase();
     String displayInitial =
         _userName.isNotEmpty ? _userName[0].toUpperCase() : '?';
@@ -205,18 +214,16 @@ class _HomePageState extends State<HomePage> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onSelected: (value) {
-              if (value == 'logout') {
-                _showLogoutDialog();
-              }
+              if (value == 'logout') _showLogoutDialog();
             },
             itemBuilder: (BuildContext context) => [
               PopupMenuItem<String>(
                 value: 'logout',
                 child: Row(
-                  children: [
-                    const Icon(Icons.logout, color: Colors.red),
-                    const SizedBox(width: 8),
-                    const Text('Sair', style: TextStyle(color: Colors.red)),
+                  children: const [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Sair', style: TextStyle(color: Colors.red)),
                   ],
                 ),
               ),
@@ -396,8 +403,9 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: const Color(0xFF15325A).withValues(alpha: 0.2),
-                          width: 1.5),
+                        color: const Color(0xFF15325A).withValues(alpha: 0.2),
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withValues(alpha: 0.15),

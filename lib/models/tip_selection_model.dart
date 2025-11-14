@@ -4,6 +4,7 @@ class TipModel {
   final double pressure;
   final double spacing;
   final String detail;
+  final String model;
   final String? imageUrl;
 
   TipModel({
@@ -12,6 +13,7 @@ class TipModel {
     required this.pressure,
     required this.spacing,
     required this.detail,
+    required this.model,
     this.imageUrl,
   });
 
@@ -51,6 +53,8 @@ class TipModel {
 
     final detail = _getNestedString(json, 'pwm', 'pwm', 'Não se aplica');
 
+    final model = _getNestedString(json, 'modelo', 'modelo', '');
+
     final imageUrl = json['image_url'] as String?;
 
     return TipModel(
@@ -59,6 +63,7 @@ class TipModel {
       pressure: pressure,
       spacing: spacing,
       detail: detail,
+      model: model,
       imageUrl: imageUrl,
     );
   }

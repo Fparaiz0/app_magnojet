@@ -3,84 +3,61 @@ import '../models/tip_selection_model.dart';
 
 class TipService {
   final SupabaseClient _supabase = Supabase.instance.client;
+  final String _tableName = 'selecao';
 
-  static const String _tableName = 'selecao';
-
-  String _formatDoubleForSupabase(double value) {
-    if (value == value.roundToDouble()) {
-      return value.toInt().toString();
+  double _parseDouble(dynamic value) {
+    if (value is num) {
+      return value.toDouble();
+    } else if (value is String) {
+      final cleanedValue = value.replaceAll(',', '.');
+      return double.tryParse(cleanedValue) ?? 0.0;
     }
-    return value.toString();
+    return 0.0;
   }
 
-  Future<int> _findIdByValue(String table, String column, double value) async {
-    dynamic filterValue = value;
+  Future<List<int>> _findIdsByValueWithTolerance(
+    String table,
+    String column,
+    double value, {
+    double absoluteTolerance = 0.5,
+    double percentTolerance = 10.0,
+  }) async {
+    final absoluteToleranceValue = absoluteTolerance;
+    final percentToleranceValue = value * (percentTolerance / 100);
+    final tolerance = absoluteToleranceValue > percentToleranceValue
+        ? absoluteToleranceValue
+        : percentToleranceValue;
 
-    if (column == 'cm') {
-      filterValue = _formatDoubleForSupabase(value);
-    }
-
-    final response = await _supabase
-        .from(table)
-        .select('id')
-        .eq(column, filterValue)
-        .limit(1);
-
-    if (response.isNotEmpty) {
-      final id = response.first['id'] as int;
-      return id;
-    }
-    return 0;
-  }
-
-  Future<List<double>> getDistinctValues(String columnName) async {
-    String sourceTable;
-    String sourceColumn;
-
-    if (columnName == 'pressure') {
-      sourceTable = 'pressao';
-      sourceColumn = 'bar';
-    } else if (columnName == 'flow_rate') {
-      sourceTable = 'vazao';
-      sourceColumn = 'litros';
-    } else if (columnName == 'spacing') {
-      sourceTable = 'espacamento';
-      sourceColumn = 'cm';
-    } else {
-      return [];
-    }
+    final minValue = (value - tolerance).clamp(0.1, double.infinity);
+    final maxValue = value + tolerance;
 
     try {
-      PostgrestList response;
+      final response = await _supabase
+          .from(table)
+          .select('id, $column')
+          .gte(column, minValue)
+          .lte(column, maxValue)
+          .order(column);
 
-      response = await _supabase
-          .from(sourceTable)
-          .select(sourceColumn)
-          .order(sourceColumn, ascending: true);
+      final ids = <int>[];
+      for (var item in response) {
+        final itemId = item['id'] as int;
+        ids.add(itemId);
+      }
 
-      final uniqueValues = response
-          .map<double>((json) {
-            final value = json[sourceColumn];
-
-            if (value is String) {
-              if (sourceTable == 'espacamento' &&
-                  value.toLowerCase().contains('35')) {
-                return 35.0;
-              }
-
-              return double.tryParse(value) ?? 0.0;
-            }
-            return (value is num ? value.toDouble() : 0.0);
-          })
-          .toSet()
-          .toList();
-
-      uniqueValues.sort();
-
-      return uniqueValues;
-    } on PostgrestException {
+      return ids;
+    } catch (e) {
       return [];
     }
+  }
+
+  double _calculateTotalDifference(TipModel tip, double targetPressure,
+      double targetFlowRate, double targetSpacing) {
+    final pressureDiff = (tip.pressure - targetPressure).abs();
+    final flowRateDiff = (tip.flowRate - targetFlowRate).abs();
+    final spacingDiff = (tip.spacing - targetSpacing).abs();
+
+    return pressureDiff * 1.0 + flowRateDiff * 1.0 + spacingDiff * 0.5;
   }
 
   Future<List<TipModel>> searchTips({
@@ -93,34 +70,207 @@ class TipService {
     required int pwmId,
   }) async {
     try {
-      final int pressaoId =
-          await _findIdByValue('pressao', 'bar', pressureValue);
-      final int vazaoId =
-          await _findIdByValue('vazao', 'litros', flowRateValue);
-      final int spacingId =
-          await _findIdByValue('espacamento', 'cm', spacingValue);
+      await debugExistingValues();
 
-      if (pressaoId == 0 || vazaoId == 0 || spacingId == 0) {
+      final pressaoIds = await _findIdsByValueWithTolerance(
+        'pressao',
+        'bar',
+        pressureValue,
+        absoluteTolerance: 0.5,
+        percentTolerance: 10,
+      );
+
+      final vazaoIds = await _findIdsByValueWithTolerance(
+        'vazao',
+        'litros',
+        flowRateValue,
+        absoluteTolerance: 0.5,
+        percentTolerance: 10,
+      );
+
+      final spacingIds = await _findIdsByValueWithTolerance(
+        'espacamento',
+        'cm',
+        spacingValue,
+        absoluteTolerance: 10,
+        percentTolerance: 20,
+      );
+
+      if (pressaoIds.isEmpty || vazaoIds.isEmpty || spacingIds.isEmpty) {
         return [];
       }
 
-      final PostgrestList response = await _supabase
+      final response = await _supabase
           .from(_tableName)
-          .select(
-              '*, image_url, pontas(ponta), pressao(bar, psi), vazao(litros), espacamento(cm), tipo_aplicacao(tipo_aplicacao), aplicacao(aplicacao), modo_acao(modo_acao), pwm(pwm)') // Adicionado 'image_url'
+          .select('''
+            *, 
+            image_url, 
+            pontas(ponta), 
+            pressao(bar), 
+            vazao(litros), 
+            espacamento(cm), 
+            tipo_aplicacao(tipo_aplicacao), 
+            aplicacao(aplicacao), 
+            modo_acao(modo_acao), 
+            pwm(pwm), 
+            modelo(modelo)
+          ''')
           .eq('tipo_aplicacao_id', applicationType)
           .eq('aplicacao_id', application)
           .eq('modo_acao_id', actionMode)
           .eq('pwm_id', pwmId)
-          .eq('pressao_id', pressaoId)
-          .eq('vazao_id', vazaoId)
-          .eq('espacamento_id', spacingId)
-          .order('id', ascending: true)
-          .limit(10);
+          .inFilter('pressao_id', pressaoIds)
+          .inFilter('vazao_id', vazaoIds)
+          .inFilter('espacamento_id', spacingIds)
+          .order('id', ascending: true);
 
-      return response.map((json) => TipModel.fromJson(json)).toList();
-    } on PostgrestException {
+      if (response.isEmpty) {
+        return [];
+      }
+
+      final allTips = response.map((json) => TipModel.fromJson(json)).toList();
+
+      final filteredTips = _filterTipsByModel(
+          allTips, pressureValue, flowRateValue, spacingValue);
+
+      return filteredTips;
+    } catch (e) {
       rethrow;
+    }
+  }
+
+  List<TipModel> _filterTipsByModel(
+    List<TipModel> allTips,
+    double targetPressure,
+    double targetFlowRate,
+    double targetSpacing,
+  ) {
+    final modelGroups = <String, List<TipModel>>{};
+
+    for (var tip in allTips) {
+      final modelName = tip.model;
+      if (!modelGroups.containsKey(modelName)) {
+        modelGroups[modelName] = [];
+      }
+      modelGroups[modelName]!.add(tip);
+    }
+
+    final result = <TipModel>[];
+
+    modelGroups.forEach((model, tips) {
+      if (tips.length == 1) {
+        result.add(tips.first);
+      } else {
+        TipModel closestTip = tips.first;
+        double smallestDifference = _calculateTotalDifference(
+            closestTip, targetPressure, targetFlowRate, targetSpacing);
+
+        for (var tip in tips.skip(1)) {
+          final difference = _calculateTotalDifference(
+              tip, targetPressure, targetFlowRate, targetSpacing);
+          if (difference < smallestDifference) {
+            smallestDifference = difference;
+            closestTip = tip;
+          }
+        }
+        result.add(closestTip);
+      }
+    });
+
+    result.sort((a, b) {
+      final diffA = _calculateTotalDifference(
+          a, targetPressure, targetFlowRate, targetSpacing);
+      final diffB = _calculateTotalDifference(
+          b, targetPressure, targetFlowRate, targetSpacing);
+      return diffA.compareTo(diffB);
+    });
+
+    return result;
+  }
+
+  Future<List<double>> getDistinctValues(String field) async {
+    final tableMap = {
+      'pressao': 'pressao',
+      'vazao': 'vazao',
+      'espacamento': 'espacamento',
+    };
+
+    final columnMap = {
+      'pressao': 'bar',
+      'vazao': 'litros',
+      'espacamento': 'cm',
+    };
+
+    final actualTable = tableMap[field];
+    final actualColumn = columnMap[field];
+
+    if (actualTable == null || actualColumn == null) {
+      return [];
+    }
+
+    try {
+      final response = await _supabase
+          .from(actualTable)
+          .select('id, $actualColumn')
+          .order(actualColumn, ascending: true);
+
+      var values = response
+          .map<double>((json) {
+            final value = json[actualColumn];
+            final result = _parseDouble(value);
+            return result;
+          })
+          .where((value) => value > 0)
+          .toSet()
+          .toList();
+
+      values.sort();
+
+      if (field == 'pressao' || field == 'vazao') {
+        values = _filterValuesByIncrement(values, 0.5);
+      }
+
+      return values;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  List<double> _filterValuesByIncrement(List<double> values, double increment) {
+    if (values.isEmpty) return [];
+
+    final filteredValues = <double>[];
+    double lastAddedValue = values.first - increment;
+
+    for (var value in values) {
+      final roundedValue = (value * 2).round() / 2;
+
+      if ((roundedValue - lastAddedValue) >= increment - 0.01) {
+        filteredValues.add(roundedValue);
+        lastAddedValue = roundedValue;
+      }
+    }
+
+    return filteredValues;
+  }
+
+  Future<void> debugExistingValues() async {
+    final tables = [
+      {'name': 'pressao', 'column': 'bar'},
+      {'name': 'vazao', 'column': 'litros'},
+      {'name': 'espacamento', 'column': 'cm'},
+    ];
+
+    for (var table in tables) {
+      try {
+        final response = await _supabase
+            .from(table['name']!)
+            .select('id, ${table['column']}')
+            .order('id');
+
+        if (response.isNotEmpty) {
+        } else {}
+      } catch (e) {}
     }
   }
 }

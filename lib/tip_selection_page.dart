@@ -57,8 +57,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   final Map<String, int> _actionModeToId = {
     'Sistemico': 1,
     'Contato': 2,
-    'Ambos': 3,
-    'Não se aplica': 4,
+    'Não se aplica': 3,
   };
 
   final List<Map<String, dynamic>> _applicationTypes = [
@@ -82,7 +81,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   final List<Map<String, dynamic>> _actionModes = [
     {'name': 'Sistemico', 'icon': Icons.spa_rounded},
-    {'name': 'Ambos', 'icon': Icons.linear_scale_rounded},
     {'name': 'Contato', 'icon': Icons.touch_app_rounded},
     {'name': 'Não se aplica', 'icon': Icons.cancel_rounded},
   ];
@@ -100,19 +98,39 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   }
 
   Future<void> _loadDistinctValues() async {
-    final pressures = await _tipService.getDistinctValues('pressure');
-    final flows = await _tipService.getDistinctValues('flow_rate');
-    final spacings = await _tipService.getDistinctValues('spacing');
+    final pressures = await _tipService.getDistinctValues('pressao');
+    final flows = await _tipService.getDistinctValues('vazao');
+    final spacings = await _tipService.getDistinctValues('espacamento');
 
     setState(() {
-      _availablePressures = pressures;
-      _availableFlowRates = flows;
+      _availablePressures = _filterValuesByIncrement(pressures, 0.5);
+      _availableFlowRates = _filterValuesByIncrement(flows, 0.5);
       _availableSpacings = spacings;
 
-      _pressure = pressures.isNotEmpty ? pressures.first : 3.0;
-      _flowRate = flows.isNotEmpty ? flows.first : 0.8;
-      _spacing = spacings.isNotEmpty ? spacings.first : 35.0;
+      _pressure =
+          _availablePressures.isNotEmpty ? _availablePressures.first : 3.0;
+      _flowRate =
+          _availableFlowRates.isNotEmpty ? _availableFlowRates.first : 0.8;
+      _spacing =
+          _availableSpacings.isNotEmpty ? _availableSpacings.first : 35.0;
     });
+  }
+
+  List<double> _filterValuesByIncrement(List<double> values, double increment) {
+    if (values.isEmpty) return [];
+
+    values.sort();
+    final filteredValues = <double>[];
+    double lastAddedValue = values.first - increment;
+
+    for (var value in values) {
+      if ((value - lastAddedValue) >= increment - 0.01) {
+        filteredValues.add(value);
+        lastAddedValue = value;
+      }
+    }
+
+    return filteredValues;
   }
 
   Future<void> _searchTips() async {
@@ -617,10 +635,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                 Semantics(
                                   header: true,
                                   child: Text(
-                                    tip.name,
+                                    '${tip.name} - ${tip.model}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ),
@@ -738,7 +756,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 builder: (context) => AlertDialog(
                   title: const Text('Ajuda'),
                   content: const Text(
-                    'Preencha todos os campos para encontrar as pontas mais adequadas para sua aplicação. Os valores de Pressão e Vazão são utilizados para filtrar pontas que suportam o valor exato selecionado.',
+                    'Preencha todos os campos para encontrar as pontas mais adequadas para sua aplicação. Os valores de Pressão e Vazão são utilizados para filtrar pontas que suportam o valor até 0.50 para cima e para baixo.',
                   ),
                   actions: [
                     TextButton(

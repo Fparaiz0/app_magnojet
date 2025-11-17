@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/tip_selection_model.dart';
+import 'dart:developer';
 
 class TipService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -270,7 +271,9 @@ class TipService {
 
         if (response.isNotEmpty) {
         } else {}
-      } catch (e) {}
+      } catch (e) {
+        log('Error in debugExistingValues: \$e');
+      }
     }
   }
 }

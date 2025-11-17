@@ -9,7 +9,7 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
 
 - 🔎 **Seleção Inteligente:** Encontre as pontas de pulverização ideais para suas necessidades.
 - 📊 **Informações Técnicas:** Acesse dados detalhados e especificações de cada produto.
-- 🔒 **Autenticação Segura:** Sistema de login e cadastro de usuários com Firebase.
+- 🔒 **Autenticação Segura:** Sistema de login e cadastro de usuários com PostgreSQL.
 - ☁️ **Sincronização Automática:** Funcionalidade offline-first com SQLite, garantindo uso contínuo e sincronização automática com a nuvem.
 - 🌍 **Multiplataforma:** Suporte nativo para Android & iOS a partir de uma única base de código.
 
@@ -39,7 +39,7 @@ Este aplicativo foi desenvolvido para a **empresa MagnoJet**, com o objetivo de 
   <a href="https://www.swift.org/"><img alt="Swift" title="Swift" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/swift/swift-original.svg"/></a>
   <a href="https://en.wikipedia.org/wiki/C_(programming_language )"><img alt="C" title="C" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg"/></a>
   <a href="https://en.wikipedia.org/wiki/C%2B%2B"><img alt="C++" title="C++" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg"/></a>
-  <a href="https://firebase.google.com/"><img alt="Firebase" title="Firebase" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg"/></a>
+  <a href="https://www.postgresql.org/"><img alt="PostgreSQL" title="PostgreSQL" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"/></a>
   <a href="https://www.sqlite.org/"><img alt="SQLite" title="SQLite" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sqlite/sqlite-original.svg"/></a>
   <a href="https://git-scm.com/"><img alt="Git" title="Git" height="40" width="50" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg"/></a>
   <a href="https://code.visualstudio.com/"><img alt="Visual Studio Code" title="Visual Studio Code" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg"/></a>

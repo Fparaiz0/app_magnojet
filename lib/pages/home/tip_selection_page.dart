@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../models/tip_selection_model.dart';
-import '../services/tip_selection_service.dart';
+import '../../../models/tip_selection_model.dart';
+import '../../../services/tip_selection_service.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});

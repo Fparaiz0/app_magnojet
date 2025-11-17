@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'login_page.dart';
+import '../auth/login_page.dart';
 import 'tip_selection_page.dart';
 
 class HomePage extends StatefulWidget {

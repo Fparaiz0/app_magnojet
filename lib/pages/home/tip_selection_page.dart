@@ -770,208 +770,213 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildSectionHeader(
-                                'Tipo de Aplicação', Icons.category_rounded,
-                                subtitle:
-                                    'Selecione o tipo de aplicação desejada'),
-                            const SizedBox(height: 16),
-                            _buildResponsiveButtonGrid(
-                              items: _applicationTypes,
-                              selectedValue: _selectedApplicationType,
-                              onSelected: (value) {
-                                setState(() {
-                                  _selectedApplicationType = value;
-                                  _showResults = false;
-                                });
-                              },
-                              crossAxisCount: 3,
-                            ),
-                          ],
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionHeader(
+                                  'Tipo de Aplicação', Icons.category_rounded,
+                                  subtitle:
+                                      'Selecione o tipo de aplicação desejada'),
+                              const SizedBox(height: 16),
+                              _buildResponsiveButtonGrid(
+                                items: _applicationTypes,
+                                selectedValue: _selectedApplicationType,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _selectedApplicationType = value;
+                                    _showResults = false;
+                                  });
+                                },
+                                crossAxisCount: 3,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildSectionHeader(
-                                'Filtros de Produto e Tecnologia',
-                                Icons.filter_alt_rounded,
-                                subtitle:
-                                    'Configure o produto e a tecnologia utilizada'),
-                            const SizedBox(height: 20),
-                            const Text(
-                              'Tipo de Produto',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: primaryColor,
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionHeader(
+                                  'Filtros de Produto e Tecnologia',
+                                  Icons.filter_alt_rounded,
+                                  subtitle:
+                                      'Configure o produto e a tecnologia utilizada'),
+                              const SizedBox(height: 20),
+                              const Text(
+                                'Tipo de Produto',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: primaryColor,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            _buildResponsiveButtonGrid(
-                              items: _applications,
-                              selectedValue: _selectedApplication,
-                              onSelected: (value) {
-                                setState(() {
-                                  _selectedApplication = value;
-                                  _showResults = false;
-                                });
-                              },
-                              crossAxisCount: 3,
-                            ),
-                            const SizedBox(height: 24),
-                            const Text(
-                              'Modo de Ação / Tecnologia',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: primaryColor,
+                              const SizedBox(height: 12),
+                              _buildResponsiveButtonGrid(
+                                items: _applications,
+                                selectedValue: _selectedApplication,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _selectedApplication = value;
+                                    _showResults = false;
+                                  });
+                                },
+                                crossAxisCount: 3,
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            _buildResponsiveButtonGrid(
-                              items: [
-                                ..._actionModes,
-                                {'name': 'PWM', 'icon': Icons.flash_on_rounded}
-                              ],
-                              selectedValue: _selectedActionMode,
-                              isPWM: _hasPWM,
-                              onSelected: (value) {
-                                setState(() {
-                                  if (value == 'PWM') {
-                                    _hasPWM = !_hasPWM;
-                                  } else {
-                                    _selectedActionMode = value;
+                              const SizedBox(height: 24),
+                              const Text(
+                                'Modo de Ação',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: primaryColor,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              _buildResponsiveButtonGrid(
+                                items: [
+                                  ..._actionModes,
+                                  {
+                                    'name': 'PWM',
+                                    'icon': Icons.flash_on_rounded
                                   }
-                                  _showResults = false;
-                                });
-                              },
-                              crossAxisCount: 4,
-                            ),
-                          ],
+                                ],
+                                selectedValue: _selectedActionMode,
+                                isPWM: _hasPWM,
+                                onSelected: (value) {
+                                  setState(() {
+                                    if (value == 'PWM') {
+                                      _hasPWM = !_hasPWM;
+                                    } else {
+                                      _selectedActionMode = value;
+                                    }
+                                    _showResults = false;
+                                  });
+                                },
+                                crossAxisCount: 4,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      margin: const EdgeInsets.only(bottom: 24),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            _buildSectionHeader(
-                                'Parâmetros Técnicos', Icons.tune_rounded,
-                                subtitle:
-                                    'Selecione a pressão, vazão e espaçamento desejadas'),
-                            _buildDropdownSelection(
-                              label: 'Pressão',
-                              currentValue: _pressure,
-                              unit: 'bar',
-                              icon: Icons.compress_rounded,
-                              options: _availablePressures,
-                              onChanged: (newValue) => setState(() {
-                                _pressure = newValue;
-                              }),
-                            ),
-                            _buildDropdownSelection(
-                              label: 'Vazão',
-                              currentValue: _flowRate,
-                              unit: 'L/min',
-                              icon: Icons.opacity_rounded,
-                              options: _availableFlowRates,
-                              onChanged: (newValue) => setState(() {
-                                _flowRate = newValue;
-                              }),
-                            ),
-                            _buildDropdownSelection(
-                              label: 'Espaçamento',
-                              currentValue: _spacing,
-                              unit: 'cm',
-                              icon: Icons.straighten_rounded,
-                              options: _availableSpacings,
-                              onChanged: (newValue) => setState(() {
-                                _spacing = newValue;
-                              }),
-                            ),
-                          ],
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        margin: const EdgeInsets.only(bottom: 24),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              _buildSectionHeader(
+                                  'Parâmetros Técnicos', Icons.tune_rounded,
+                                  subtitle:
+                                      'Selecione a pressão, vazão e espaçamento desejadas'),
+                              _buildDropdownSelection(
+                                label: 'Pressão',
+                                currentValue: _pressure,
+                                unit: 'bar',
+                                icon: Icons.compress_rounded,
+                                options: _availablePressures,
+                                onChanged: (newValue) => setState(() {
+                                  _pressure = newValue;
+                                }),
+                              ),
+                              _buildDropdownSelection(
+                                label: 'Vazão',
+                                currentValue: _flowRate,
+                                unit: 'L/min',
+                                icon: Icons.opacity_rounded,
+                                options: _availableFlowRates,
+                                onChanged: (newValue) => setState(() {
+                                  _flowRate = newValue;
+                                }),
+                              ),
+                              _buildDropdownSelection(
+                                label: 'Espaçamento',
+                                currentValue: _spacing,
+                                unit: 'cm',
+                                icon: Icons.straighten_rounded,
+                                options: _availableSpacings,
+                                onChanged: (newValue) => setState(() {
+                                  _spacing = newValue;
+                                }),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    _buildLoadingIndicator(),
-                    _buildResultSection(),
-                    const SizedBox(height: 20),
+                      _buildLoadingIndicator(),
+                      _buildResultSection(),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    )
                   ],
                 ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  )
-                ],
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _searchTips,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 2,
-                  ),
-                  child: Text(
-                    _isLoading ? 'BUSCANDO...' : 'BUSCAR PONTAS',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _searchTips,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                    ),
+                    child: Text(
+                      _isLoading ? 'BUSCANDO...' : 'BUSCAR PONTAS',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -986,38 +991,132 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screenWidth = constraints.maxWidth;
+        final bool isActionMode = items.any((item) => item['name'] == 'PWM');
 
-        final actualCrossAxisCount = screenWidth > 800
-            ? crossAxisCount
-            : screenWidth > 500
-                ? 3
-                : 2;
+        if (isActionMode) {
+          final nonPWMItems =
+              items.where((item) => item['name'] != 'PWM').toList();
+          final pwmItems =
+              items.where((item) => item['name'] == 'PWM').toList();
 
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: actualCrossAxisCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.8,
-          ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            final isSelected =
-                item['name'] == 'PWM' ? isPWM : item['name'] == selectedValue;
+          final hasPWM = pwmItems.isNotEmpty;
+          final pwmItem = hasPWM ? pwmItems.first : null;
 
-            return _buildIconSelectionButton(
-              title: item['name'],
-              icon: item['icon'],
-              isSelected: isSelected,
-              onTap: () => onSelected(item['name']),
-              width: double.infinity,
-            );
-          },
-        );
+          final availableWidth = constraints.maxWidth;
+          final totalSpacing = 12 * (nonPWMItems.length - 1);
+          final buttonWidth =
+              (availableWidth - totalSpacing) / nonPWMItems.length;
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: nonPWMItems.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final isSelected = item['name'] == selectedValue;
+
+                    return Container(
+                      width: buttonWidth,
+                      margin: EdgeInsets.only(
+                        right: index < nonPWMItems.length - 1 ? 12 : 0,
+                      ),
+                      child: _buildIconSelectionButton(
+                        title: item['name'],
+                        icon: item['icon'],
+                        isSelected: isSelected,
+                        onTap: () => onSelected(item['name']),
+                        width: double.infinity,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              if (hasPWM && pwmItem != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8, left: 4),
+                      child: Text(
+                        'Tecnologia PWM',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: buttonWidth,
+                          child: _buildIconSelectionButton(
+                            title: pwmItem['name'],
+                            icon: pwmItem['icon'],
+                            isSelected: isPWM,
+                            onTap: () => onSelected(pwmItem['name']),
+                            width: double.infinity,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+            ],
+          );
+        } else {
+          final availableWidth = constraints.maxWidth;
+          final itemsPerRow = 3;
+          final totalSpacing = 12 * (itemsPerRow - 1);
+          final buttonWidth = (availableWidth - totalSpacing) / itemsPerRow;
+
+          final List<List<Map<String, dynamic>>> rows = [];
+          for (int i = 0; i < items.length; i += itemsPerRow) {
+            final end = (i + itemsPerRow) < items.length
+                ? (i + itemsPerRow)
+                : items.length;
+            rows.add(items.sublist(i, end));
+          }
+
+          return Column(
+            children: rows.map((rowItems) {
+              final bool isLastRow = rows.last == rowItems;
+              final bool hasSingleItem = rowItems.length == 1;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: isLastRow && hasSingleItem
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.start,
+                  children: rowItems.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final isSelected = item['name'] == selectedValue;
+
+                    return Container(
+                      width: buttonWidth,
+                      margin: EdgeInsets.only(
+                        right: index < rowItems.length - 1 ? 12 : 0,
+                      ),
+                      child: _buildIconSelectionButton(
+                        title: item['name'],
+                        icon: item['icon'],
+                        isSelected: isSelected,
+                        onTap: () => onSelected(item['name']),
+                        width: double.infinity,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              );
+            }).toList(),
+          );
+        }
       },
     );
   }

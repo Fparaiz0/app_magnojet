@@ -1,70 +1,60 @@
 class TipModel {
+  final int id;
   final String name;
-  final double flowRate;
-  final double pressure;
-  final double spacing;
-  final String detail;
   final String model;
+  final double pressure;
+  final double flowRate;
+  final double spacing;
+  final double speed;
   final String? imageUrl;
 
   TipModel({
+    required this.id,
     required this.name,
-    required this.flowRate,
-    required this.pressure,
-    required this.spacing,
-    required this.detail,
     required this.model,
+    required this.pressure,
+    required this.flowRate,
+    required this.spacing,
+    required this.speed,
     this.imageUrl,
   });
 
-  static String _getNestedString(Map<String, dynamic> json, String key,
-      String subkey, String defaultValue) {
-    final nestedObject = json[key] as Map<String, dynamic>?;
-    return (nestedObject != null)
-        ? (nestedObject[subkey] as String?) ?? defaultValue
-        : defaultValue;
+  factory TipModel.fromJson(Map<String, dynamic> json) {
+    return TipModel(
+      id: _parseInt(json['id']),
+      name: _parseString(json['pontas']?['ponta']),
+      model: _parseString(json['modelo']?['modelo']),
+      pressure: _parseDouble(json['pressao']?['bar']),
+      flowRate: _parseDouble(json['vazao']?['litros']),
+      spacing: _parseDouble(json['espacamento']?['cm']),
+      speed: _parseDouble(json['velocidade']?['km_h']),
+      imageUrl: _parseString(json['image_url']),
+    );
   }
 
-  static double _getNestedDouble(
-      Map<String, dynamic> json, String key, String subkey) {
-    final nestedObject = json[key] as Map<String, dynamic>?;
-    if (nestedObject != null) {
-      final value = nestedObject[subkey];
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    if (value is double) return value.toInt();
+    return 0;
+  }
 
-      if (value is String) {
-        return double.tryParse(value) ?? 0.0;
-      }
-      if (value is num) {
-        return value.toDouble();
-      }
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) {
+      final cleaned =
+          value.replaceAll(RegExp(r'[^\d,.-]'), '').replaceAll(',', '.');
+      return double.tryParse(cleaned) ?? 0.0;
     }
     return 0.0;
   }
 
-  factory TipModel.fromJson(Map<String, dynamic> json) {
-    final name =
-        _getNestedString(json, 'pontas', 'ponta', 'Ponta Desconhecida');
-
-    final flowRate = _getNestedDouble(json, 'vazao', 'litros');
-
-    final pressure = _getNestedDouble(json, 'pressao', 'bar');
-
-    final spacing = _getNestedDouble(json, 'espacamento', 'cm');
-
-    final detail = _getNestedString(json, 'pwm', 'pwm', 'Não se aplica');
-
-    final model = _getNestedString(json, 'modelo', 'modelo', '');
-
-    final imageUrl = json['image_url'] as String?;
-
-    return TipModel(
-      name: name,
-      flowRate: flowRate,
-      pressure: pressure,
-      spacing: spacing,
-      detail: detail,
-      model: model,
-      imageUrl: imageUrl,
-    );
+  static String _parseString(dynamic value) {
+    if (value == null) return '';
+    if (value is String) return value;
+    return value.toString();
   }
 }

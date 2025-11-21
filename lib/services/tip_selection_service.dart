@@ -53,18 +53,23 @@ class TipService {
   }
 
   double _calculateTotalDifference(TipModel tip, double targetPressure,
-      double targetFlowRate, double targetSpacing) {
+      double targetFlowRate, double targetSpacing, double targetSpeed) {
     final pressureDiff = (tip.pressure - targetPressure).abs();
     final flowRateDiff = (tip.flowRate - targetFlowRate).abs();
     final spacingDiff = (tip.spacing - targetSpacing).abs();
+    final speedDiff = (tip.speed - targetSpeed).abs();
 
-    return pressureDiff * 1.0 + flowRateDiff * 1.0 + spacingDiff * 0.5;
+    return pressureDiff * 1.0 +
+        flowRateDiff * 1.0 +
+        spacingDiff * 0.5 +
+        speedDiff * 0.3;
   }
 
   Future<List<TipModel>> searchTips({
     required double pressureValue,
     required double flowRateValue,
     required double spacingValue,
+    required double speedValue,
     required int applicationType,
     required int application,
     required int actionMode,
@@ -97,7 +102,18 @@ class TipService {
         percentTolerance: 20,
       );
 
-      if (pressaoIds.isEmpty || vazaoIds.isEmpty || spacingIds.isEmpty) {
+      final speedIds = await _findIdsByValueWithTolerance(
+        'velocidade',
+        'km_h',
+        speedValue,
+        absoluteTolerance: 0.5,
+        percentTolerance: 10,
+      );
+
+      if (pressaoIds.isEmpty ||
+          vazaoIds.isEmpty ||
+          spacingIds.isEmpty ||
+          speedIds.isEmpty) {
         return [];
       }
 
@@ -110,6 +126,7 @@ class TipService {
             pressao(bar), 
             vazao(litros), 
             espacamento(cm), 
+            velocidade(km_h),
             tipo_aplicacao(tipo_aplicacao), 
             aplicacao(aplicacao), 
             modo_acao(modo_acao), 
@@ -123,6 +140,7 @@ class TipService {
           .inFilter('pressao_id', pressaoIds)
           .inFilter('vazao_id', vazaoIds)
           .inFilter('espacamento_id', spacingIds)
+          .inFilter('velocidade_id', speedIds)
           .order('id', ascending: true);
 
       if (response.isEmpty) {
@@ -132,7 +150,7 @@ class TipService {
       final allTips = response.map((json) => TipModel.fromJson(json)).toList();
 
       final filteredTips = _filterTipsByModel(
-          allTips, pressureValue, flowRateValue, spacingValue);
+          allTips, pressureValue, flowRateValue, spacingValue, speedValue);
 
       return filteredTips;
     } catch (e) {
@@ -145,6 +163,7 @@ class TipService {
     double targetPressure,
     double targetFlowRate,
     double targetSpacing,
+    double targetSpeed,
   ) {
     final modelGroups = <String, List<TipModel>>{};
 
@@ -163,12 +182,12 @@ class TipService {
         result.add(tips.first);
       } else {
         TipModel closestTip = tips.first;
-        double smallestDifference = _calculateTotalDifference(
-            closestTip, targetPressure, targetFlowRate, targetSpacing);
+        double smallestDifference = _calculateTotalDifference(closestTip,
+            targetPressure, targetFlowRate, targetSpacing, targetSpeed);
 
         for (var tip in tips.skip(1)) {
           final difference = _calculateTotalDifference(
-              tip, targetPressure, targetFlowRate, targetSpacing);
+              tip, targetPressure, targetFlowRate, targetSpacing, targetSpeed);
           if (difference < smallestDifference) {
             smallestDifference = difference;
             closestTip = tip;
@@ -180,9 +199,9 @@ class TipService {
 
     result.sort((a, b) {
       final diffA = _calculateTotalDifference(
-          a, targetPressure, targetFlowRate, targetSpacing);
+          a, targetPressure, targetFlowRate, targetSpacing, targetSpeed);
       final diffB = _calculateTotalDifference(
-          b, targetPressure, targetFlowRate, targetSpacing);
+          b, targetPressure, targetFlowRate, targetSpacing, targetSpeed);
       return diffA.compareTo(diffB);
     });
 
@@ -194,12 +213,14 @@ class TipService {
       'pressao': 'pressao',
       'vazao': 'vazao',
       'espacamento': 'espacamento',
+      'velocidade': 'velocidade',
     };
 
     final columnMap = {
       'pressao': 'bar',
       'vazao': 'litros',
       'espacamento': 'cm',
+      'velocidade': 'km_h',
     };
 
     final actualTable = tableMap[field];
@@ -227,7 +248,11 @@ class TipService {
 
       values.sort();
 
-      if (field == 'pressao' || field == 'vazao') {
+      if (field == 'pressao') {
+        values = _filterValuesByIncrement(values, 0.1);
+      } else if (field == 'vazao' ||
+          field == 'espacamento' ||
+          field == 'velocidade') {
         values = _filterValuesByIncrement(values, 0.5);
       }
 
@@ -260,6 +285,7 @@ class TipService {
       {'name': 'pressao', 'column': 'bar'},
       {'name': 'vazao', 'column': 'litros'},
       {'name': 'espacamento', 'column': 'cm'},
+      {'name': 'velocidade', 'column': 'km_h'},
     ];
 
     for (var table in tables) {
@@ -272,7 +298,7 @@ class TipService {
         if (response.isNotEmpty) {
         } else {}
       } catch (e) {
-        log('Error in debugExistingValues: \$e');
+        log('Error in debugExistingValues: $e');
       }
     }
   }

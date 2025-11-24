@@ -1387,8 +1387,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       return const SizedBox.shrink();
     }
 
-    final filteredTips = _getFilteredTips();
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

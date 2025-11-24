@@ -116,7 +116,11 @@ class _HomePageState extends State<HomePage> {
     required String title,
     required VoidCallback onTap,
   }) {
-    final isSelected = _selectedDrawerItem == title;
+    final bool isHomePage = ModalRoute.of(context)?.isFirst == true;
+
+    final bool isSelected =
+        isHomePage ? title == 'Início' : _selectedDrawerItem == title;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -292,7 +296,17 @@ class _HomePageState extends State<HomePage> {
                       _buildDrawerItem(
                         icon: Icons.home_rounded,
                         title: 'Início',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          setState(() {
+                            _selectedDrawerItem = 'Início';
+                          });
+                          Navigator.pop(context);
+
+                          if (!ModalRoute.of(context)!.isFirst) {
+                            Navigator.popUntil(
+                                context, (route) => route.isFirst);
+                          }
+                        },
                       ),
                       _buildDrawerItem(
                         icon: Icons.search_rounded,

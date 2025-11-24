@@ -21,6 +21,20 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
 
+  final Map<int, String> _dropletSizeMap = {
+    1: 'EF',
+    2: 'MF',
+    3: 'F',
+    4: 'M',
+    5: 'G',
+    6: 'MG',
+    7: 'EG',
+    8: 'UG',
+  };
+
+  Set<int> _selectedDropletSizes = {};
+  List<int> _availableDropletSizes = [];
+
   String _userName = '';
   bool _isLoadingUser = true;
   double _pressure = 3.0;
@@ -223,8 +237,19 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       if (!mounted) return;
       _preloadImages(results);
 
+      final availableSizes = <int>{};
+      for (final tip in results) {
+        if (tip.dropletSizeId != null) {
+          availableSizes.add(tip.dropletSizeId!);
+        }
+      }
+
       setState(() {
         _recommendedTips = results;
+        _availableDropletSizes = availableSizes.toList();
+
+        _selectedDropletSizes = availableSizes;
+
         _isLoading = false;
         _showResults = true;
       });
@@ -276,6 +301,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       _flowRatePerHectare = 100.0;
       _spacing = 50.0;
       _speed = 12.0;
+      _selectedDropletSizes.clear();
+      _availableDropletSizes.clear();
     });
     _calculateFlowRate();
     _scrollController.animateTo(
@@ -680,6 +707,50 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       return const SizedBox.shrink();
     }
 
+    final filteredTips = _getFilteredTips();
+
+    if (filteredTips.isEmpty) {
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        margin: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.orange.shade200),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.filter_alt_off_rounded,
+                  size: 40, color: Colors.orange.shade700),
+              const SizedBox(height: 10),
+              const Text(
+                'Nenhuma ponta encontrada com os filtros selecionados.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: primaryColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (_availableDropletSizes.isNotEmpty)
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedDropletSizes = _availableDropletSizes.toSet();
+                    });
+                  },
+                  child: const Text('Mostrar todos os tamanhos de gota'),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (_recommendedTips.isEmpty) {
       return AnimatedContainer(
         duration: const Duration(milliseconds: 500),
@@ -736,10 +807,14 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildDropletSizeFilter(),
+          const SizedBox(height: 20),
           _buildSectionHeader('Pontas Recomendadas', Icons.verified_rounded,
               subtitle:
-                  'Baseado nos parâmetros informados (${_recommendedTips.length} resultados)'),
-          ..._recommendedTips.map((tip) {
+                  'Baseado nos parâmetros informados (${filteredTips.length} resultados)'),
+          ...filteredTips.map((tip) {
+            final dropletSize = _dropletSizeMap[tip.dropletSizeId] ?? 'N/A';
+
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
               elevation: 3,
@@ -820,6 +895,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                               _buildInfoChip(
                                 _formatExactValue(tip.speed, 'km/h'),
                                 Icons.speed_rounded,
+                              ),
+                              _buildInfoChip(
+                                dropletSize,
+                                Icons.water_drop_rounded,
                               ),
                               _buildInfoChip(
                                 _hasPWM ? 'Sim' : 'Não',
@@ -1289,6 +1368,129 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           );
         }
       },
+    );
+  }
+
+  List<TipModel> _getFilteredTips() {
+    if (_selectedDropletSizes.isEmpty) {
+      return _recommendedTips;
+    }
+
+    return _recommendedTips.where((tip) {
+      return tip.dropletSizeId != null &&
+          _selectedDropletSizes.contains(tip.dropletSizeId!);
+    }).toList();
+  }
+
+  Widget _buildDropletSizeFilter() {
+    if (_availableDropletSizes.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final filteredTips = _getFilteredTips();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.water_drop_rounded, color: primaryColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Filtrar por Tamanho de Gota',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: primaryColor,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${filteredTips.length} resultados',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _availableDropletSizes.map((sizeId) {
+              final isSelected = _selectedDropletSizes.contains(sizeId);
+              final sizeName = _dropletSizeMap[sizeId] ?? 'N/A';
+              final isOnlyOneSelected = _selectedDropletSizes.length == 1;
+
+              return FilterChip(
+                selected: isSelected,
+                onSelected: (selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedDropletSizes.add(sizeId);
+                    } else {
+                      if (!isOnlyOneSelected || !isSelected) {
+                        _selectedDropletSizes.remove(sizeId);
+                      }
+                    }
+                  });
+                },
+                label: Text(
+                  sizeName,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                backgroundColor: Colors.white,
+                selectedColor: primaryColor,
+                checkmarkColor: Colors.white,
+                side: BorderSide(
+                  color: isSelected ? primaryColor : Colors.grey.shade300,
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          if (_availableDropletSizes.length > 1)
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedDropletSizes = _availableDropletSizes.toSet();
+                    });
+                  },
+                  child: const Text(
+                    'Selecionar Todos',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_selectedDropletSizes.length > 1) {
+                        _selectedDropletSizes = {_selectedDropletSizes.first};
+                      }
+                    });
+                  },
+                  child: const Text(
+                    'Limpar Seleção',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 

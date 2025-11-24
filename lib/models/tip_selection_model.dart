@@ -7,6 +7,7 @@ class TipModel {
   final double spacing;
   final double speed;
   final String? imageUrl;
+  final int? dropletSizeId;
 
   TipModel({
     required this.id,
@@ -17,22 +18,24 @@ class TipModel {
     required this.spacing,
     required this.speed,
     this.imageUrl,
+    this.dropletSizeId,
   });
 
   factory TipModel.fromJson(Map<String, dynamic> json) {
     return TipModel(
-      id: _parseInt(json['id']),
-      name: _parseString(json['pontas']?['ponta']),
-      model: _parseString(json['modelo']?['modelo']),
-      pressure: _parseDouble(json['pressao']?['bar']),
-      flowRate: _parseDouble(json['vazao']?['litros']),
-      spacing: _parseDouble(json['espacamento']?['cm']),
-      speed: _parseDouble(json['velocidade']?['km_h']),
-      imageUrl: _parseString(json['image_url']),
+      id: _safeParseInt(json['id']),
+      name: _safeParseString(json['pontas']?['ponta']),
+      model: _safeParseString(json['modelo']?['modelo']),
+      pressure: _safeParseDouble(json['pressao']?['bar']),
+      flowRate: _safeParseDouble(json['vazao']?['litros']),
+      spacing: _safeParseDouble(json['espacamento']?['cm']),
+      speed: _safeParseDouble(json['velocidade']?['km_h']),
+      imageUrl: _safeParseString(json['image_url']),
+      dropletSizeId: _safeParseInt(json['tamanho_gota_id']),
     );
   }
 
-  static int _parseInt(dynamic value) {
+  static int _safeParseInt(dynamic value) {
     if (value == null) return 0;
     if (value is int) return value;
     if (value is String) return int.tryParse(value) ?? 0;
@@ -40,45 +43,33 @@ class TipModel {
     return 0;
   }
 
-  static double _parseDouble(dynamic value) {
+  static double _safeParseDouble(dynamic value) {
     if (value == null) return 0.0;
     if (value is double) return value;
     if (value is int) return value.toDouble();
     if (value is String) {
+      final cleaned = value.replaceAll(',', '.');
+
+      final result = double.tryParse(cleaned);
+      if (result != null) return result;
+
       final buffer = StringBuffer();
-      bool hasDecimalPoint = false;
-
-      for (final char in value.runes) {
-        final character = String.fromCharCode(char);
-
-        if (character == '-' && buffer.isEmpty) {
-          buffer.write(character);
-        } else if (character == '.' && !hasDecimalPoint) {
-          buffer.write(character);
-          hasDecimalPoint = true;
-        } else if (character == ',') {
-          if (!hasDecimalPoint) {
-            buffer.write('.');
-            hasDecimalPoint = true;
-          }
-        } else if (character.codeUnitAt(0) >= 48 &&
-            character.codeUnitAt(0) <= 57) {
-          buffer.write(character);
+      for (final char in cleaned.runes) {
+        final c = String.fromCharCode(char);
+        if (c == '-' && buffer.isEmpty) {
+          buffer.write(c);
+        } else if (c == '.') {
+          buffer.write(c);
+        } else if (c.codeUnitAt(0) >= 48 && c.codeUnitAt(0) <= 57) {
+          buffer.write(c);
         }
       }
-
-      final resultString = buffer.toString();
-
-      if (resultString.isEmpty || resultString == '-' || resultString == '-.') {
-        return 0.0;
-      }
-
-      return double.tryParse(resultString) ?? 0.0;
+      return double.tryParse(buffer.toString()) ?? 0.0;
     }
     return 0.0;
   }
 
-  static String _parseString(dynamic value) {
+  static String _safeParseString(dynamic value) {
     if (value == null) return '';
     if (value is String) return value;
     return value.toString();

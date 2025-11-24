@@ -1404,7 +1404,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
               Icon(Icons.water_drop_rounded, color: primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
-                'Filtrar por Tamanho de Gota',
+                'Filtrar por Tamanho de Gota:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -1412,13 +1412,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 ),
               ),
               const Spacer(),
-              Text(
-                '${filteredTips.length} resultados',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -1471,19 +1464,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                   },
                   child: const Text(
                     'Selecionar Todos',
-                    style: TextStyle(fontSize: 12),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_selectedDropletSizes.length > 1) {
-                        _selectedDropletSizes = {_selectedDropletSizes.first};
-                      }
-                    });
-                  },
-                  child: const Text(
-                    'Limpar Seleção',
                     style: TextStyle(fontSize: 12),
                   ),
                 ),

@@ -302,7 +302,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         width: width,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isSelected ? primaryColor.withOpacity(0.1) : Colors.white,
+          color:
+              isSelected ? primaryColor.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? primaryColor : Colors.grey.shade300,
@@ -311,14 +312,14 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: primaryColor.withOpacity(0.2),
+                    color: primaryColor.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
                 ]
               : [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 1),
                   )
@@ -353,7 +354,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 style: TextStyle(
                   fontSize: 10,
                   color: isSelected
-                      ? primaryColor.withOpacity(0.8)
+                      ? primaryColor.withValues(alpha: 0.8)
                       : Colors.grey.shade600,
                   fontWeight: FontWeight.w500,
                 ),
@@ -400,7 +401,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: primaryColor.withOpacity(0.3)),
+            border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -417,7 +418,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                     : null,
                 style: IconButton.styleFrom(
                   backgroundColor: canDecrement
-                      ? primaryColor.withOpacity(0.1)
+                      ? primaryColor.withValues(alpha: 0.1)
                       : Colors.grey.shade100,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -459,7 +460,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                     : null,
                 style: IconButton.styleFrom(
                   backgroundColor: canIncrement
-                      ? primaryColor.withOpacity(0.1)
+                      ? primaryColor.withValues(alpha: 0.1)
                       : Colors.grey.shade100,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -507,7 +508,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: primaryColor.withOpacity(0.3)),
+            border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
           ),
           child: Column(
             children: [
@@ -527,7 +528,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                         : null,
                     style: IconButton.styleFrom(
                       backgroundColor: canDecrement
-                          ? primaryColor.withOpacity(0.1)
+                          ? primaryColor.withValues(alpha: 0.1)
                           : Colors.grey.shade100,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -578,7 +579,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                         : null,
                     style: IconButton.styleFrom(
                       backgroundColor: canIncrement
-                          ? primaryColor.withOpacity(0.1)
+                          ? primaryColor.withValues(alpha: 0.1)
                           : Colors.grey.shade100,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -653,7 +654,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: primaryColor.withOpacity(0.1),
+        color: primaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -723,10 +724,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       decoration: BoxDecoration(
         color: secondaryColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: primaryColor.withOpacity(0.2)),
+        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.1),
+            color: primaryColor.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

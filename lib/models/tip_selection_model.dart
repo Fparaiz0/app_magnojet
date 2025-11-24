@@ -45,9 +45,35 @@ class TipModel {
     if (value is double) return value;
     if (value is int) return value.toDouble();
     if (value is String) {
-      final cleaned =
-          value.replaceAll(RegExp(r'[^\d,.-]'), '').replaceAll(',', '.');
-      return double.tryParse(cleaned) ?? 0.0;
+      final buffer = StringBuffer();
+      bool hasDecimalPoint = false;
+
+      for (final char in value.runes) {
+        final character = String.fromCharCode(char);
+
+        if (character == '-' && buffer.isEmpty) {
+          buffer.write(character);
+        } else if (character == '.' && !hasDecimalPoint) {
+          buffer.write(character);
+          hasDecimalPoint = true;
+        } else if (character == ',') {
+          if (!hasDecimalPoint) {
+            buffer.write('.');
+            hasDecimalPoint = true;
+          }
+        } else if (character.codeUnitAt(0) >= 48 &&
+            character.codeUnitAt(0) <= 57) {
+          buffer.write(character);
+        }
+      }
+
+      final resultString = buffer.toString();
+
+      if (resultString.isEmpty || resultString == '-' || resultString == '-.') {
+        return 0.0;
+      }
+
+      return double.tryParse(resultString) ?? 0.0;
     }
     return 0.0;
   }

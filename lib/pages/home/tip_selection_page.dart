@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../models/tip_selection_model.dart';
 import '../../../services/tip_selection_service.dart';
+import 'home_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../widgets/custom_drawer.dart';
+import '../auth/login_page.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});
@@ -12,10 +16,13 @@ class TipSelectionPage extends StatefulWidget {
 
 class _TipSelectionPageState extends State<TipSelectionPage> {
   final TipService _tipService = TipService();
+  final supabase = Supabase.instance.client;
 
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
 
+  String _userName = '';
+  bool _isLoadingUser = true;
   double _pressure = 3.0;
   double _flowRate = 0.8;
   double _spacing = 35.0;
@@ -117,12 +124,44 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   @override
   void initState() {
     super.initState();
+    _loadUserData();
   }
 
   @override
   void dispose() {
     _imageCache.clear();
     super.dispose();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      if (mounted) setState(() => _isLoadingUser = false);
+      return;
+    }
+
+    try {
+      final response = await supabase
+          .from('users')
+          .select('name')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (mounted) {
+        setState(() {
+          _userName = (response?['name'] ?? 'Usuário').split(' ').first;
+          _isLoadingUser = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingUser = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar usuário: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _searchTips() async {
@@ -767,6 +806,21 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           ),
         ],
       ),
+      drawer: CustomDrawer(
+        currentRoute: '/tips',
+        userName: _userName,
+        isLoadingUser: _isLoadingUser,
+        onHomeTap: () {
+          Navigator.pop(context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+            (route) => false,
+          );
+        },
+        onTipsTap: () => Navigator.pop(context),
+        onLogoutTap: () => _showLogoutDialog(context),
+      ),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -1126,5 +1180,55 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         }
       },
     );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Confirmar Saída'),
+          content: const Text('Tem certeza que deseja sair do aplicativo?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                _performLogout();
+              },
+              child: const Text(
+                'Sair',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _performLogout() async {
+    try {
+      await supabase.auth.signOut();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao sair: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

@@ -1,52 +1,52 @@
 <p align="center">
-  <img src="assets/icon_normal.png" alt="MagnoJet-Logo" width="200"/>
+  <img src="assets/icon_normal.png" alt="logo-FP" width="200"/>
 </p>
 
 <h1 align="center">
- <strong>MagnoJet Application</strong>
+  <strong>Aplicativo MagnoJet</strong>
 </h1>
 
 <p align="center">
-  Welcome to the <strong>MagnoJet Application</strong> 🚀<br>
-  This application was developed for <strong>MagnoJet Company</strong>, with the objective of assisting <strong>clients and consultants</strong> in <strong>selecting the best spray nozzles</strong> available on the market.
+  Bem-vindo(a) ao <strong>Aplicativo MagnoJet</strong> 🚀<br>
+  Este aplicativo foi desenvolvido para a <strong>empresa MagnoJet</strong>, com o objetivo de auxiliar <strong>clientes e consultores</strong> na <strong>seleção das melhores pontas de pulverização</strong> disponíveis no mercado.
 </p>
 
 <p align="center">
-  <a href="/README-PT.md" target="_blank">🇧🇷 Português</a>
+  <a href="/README.md" target="_blank">🇺🇸 English</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/Fparaiz0/prepostagem_magnojet/issues" target="_blank">🐛 Report Bug</a>
+  <a href="https://github.com/Fparaiz0/prepostagem_magnojet/issues" target="_blank">🐛 Reportar Bug</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/Fparaiz0" target="_blank">💼 GitHub Profile</a>
+  <a href="https://github.com/Fparaiz0" target="_blank">💼 Perfil GitHub</a>
 </p>
 
 ---
 
-# 📱 Features
+# 📱 Funcionalidades
 
-- 🔎 **Smart Selection:** Find the ideal spray nozzles for your needs.
-- 📊 **Technical Information:** Access detailed data and specifications for each product.
-- 🔒 **Secure Authentication:** User login and registration system with PostgreSQL.
-- ☁️ **Automatic Synchronization:** Offline-first functionality with SQLite, ensuring continuous use and automatic cloud synchronization.
-- 🌍 **Multiplatform:** Native support for Android & iOS from a single codebase.
+- 🔎 **Seleção Inteligente:** Encontre as pontas de pulverização ideais para suas necessidades.
+- 📊 **Informações Técnicas:** Acesse dados detalhados e especificações de cada produto.
+- 🔒 **Autenticação Segura:** Sistema de login e cadastro de usuários com PostgreSQL.
+- ☁️ **Sincronização Automática:** Funcionalidade offline-first com SQLite, garantindo uso contínuo e sincronização automática com a nuvem.
+- 🌍 **Multiplataforma:** Suporte nativo para Android & iOS a partir de uma única base de código.
 
 ---
 
-# 🎨 Application Screens
+# 🎨 Telas do Aplicativo
 
   <p align="center" valign="top" >
-    <img src="assets/images/page_singIn.png" width="250" title="Login Screen">
-    <img src="assets/images/page_singUp.png" width="250" title="Register Screen">
-    <img src="assets/images/page_forgotPassword.png" width="250" title="Password Recovery Screen">
+    <img src="assets/images/page_singIn.png" width="250" title="Tela de Login">
+    <img src="assets/images/page_singUp.png" width="250" title="Tela de Cadastro">
+    <img src="assets/images/page_forgotPassword.png" width="250" title="Tela de Recuperação de Senha">
   </p>
   <p align="center" valign="top" >
-    <img src="assets/images/page_home.png" width="250" title="Home Screen">
+    <img src="assets/images/page_home.png" width="250" title="Tela Inicial">
     <img src="assets/images/drawer.png" width="250" title="Drawer">
-    <img src="assets/images/page_tip_selection.png" width="250" title="Nozzle Selection Screen">
+    <img src="assets/images/page_tip_selection.png" width="250" title="Tela de Seleção de pontas">
   </p>
 
 ---
 
-# 🛠️ Technologies Used
+# 🛠️ Tecnologias Utilizadas
 
 <p align="center">
   <a href="https://flutter.dev/"><img alt="Flutter" title="Flutter" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg"/></a>
@@ -61,11 +61,11 @@
 
 ---
 
-# 👨‍💻 Author
+# 👨‍💻 Autor
 
-This project was developed by **Felipe Paraizo**.
+Este projeto foi desenvolvido por **Felipe Paraizo**.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Felipe_Paraizo-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/felipe-paraizo-de-oliveira-45882431a/)
 [![GitHub](https://img.shields.io/badge/GitHub-Fparaiz0-181717?style=for-the-badge&logo=github)](https://github.com/Fparaiz0)
 
-The source code is hosted in this repository: [github.com/Fparaiz0/app_magnojet](https://github.com/Fparaiz0/app_magnojet)
+O código-fonte está hospedado neste repositório: [github.com/Fparaiz0/app_magnojet](https://github.com/Fparaiz0/app_magnojet)

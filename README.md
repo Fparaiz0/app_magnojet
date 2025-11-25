@@ -14,7 +14,7 @@
 <p align="center">
   <a href="/README-PT.md" target="_blank">🇧🇷 Português</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/Fparaiz0/prepostagem_magnojet/issues" target="_blank">🐛 Report Bug</a>
+  <a href="https://github.com/Fparaiz0/app_magnojet/issues" target="_blank">🐛 Report Bug</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="https://github.com/Fparaiz0" target="_blank">💼 GitHub Profile</a>
 </p>

@@ -52,24 +52,60 @@ class TipService {
     }
   }
 
-  double _calculateTotalDifference(TipModel tip, double targetPressure,
-      double targetFlowRate, double targetSpacing, double targetSpeed) {
-    final pressureDiff = (tip.pressure - targetPressure).abs();
-    final flowRateDiff = (tip.flowRate - targetFlowRate).abs();
-    final spacingDiff = (tip.spacing - targetSpacing).abs();
-    final speedDiff = (tip.speed - targetSpeed).abs();
 
-    return pressureDiff * 1.0 +
-        flowRateDiff * 1.0 +
-        spacingDiff * 0.5 +
-        speedDiff * 0.3;
+  Future<List<int>> _findVazaoIdsWithPriority(
+    double flowRateValue, {
+    double primaryTolerance = 0.5,
+    double secondaryTolerance = 1.0,
+  }) async {
+    try {
+
+      final preciseResponse = await _supabase
+          .from('vazao')
+          .select('id, litros')
+          .gte('litros', flowRateValue - primaryTolerance)
+          .lte('litros', flowRateValue + primaryTolerance)
+          .order('litros');
+
+      if (preciseResponse.isNotEmpty) {
+        return preciseResponse.map((item) => item['id'] as int).toList();
+      }
+
+      final widerResponse = await _supabase
+          .from('vazao')
+          .select('id, litros')
+          .gte('litros', flowRateValue - secondaryTolerance)
+          .lte('litros', flowRateValue + secondaryTolerance)
+          .order('litros');
+
+      if (widerResponse.isNotEmpty) {
+        return widerResponse.map((item) => item['id'] as int).toList();
+      }
+
+      final widestResponse = await _supabase
+          .from('vazao')
+          .select('id, litros')
+          .gte('litros', flowRateValue * 0.7) 
+          .lte('litros', flowRateValue * 1.3) 
+          .order('litros');
+
+      return widestResponse.map((item) => item['id'] as int).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  double _calculateFlowRateSimilarity(TipModel tip, double targetFlowRate) {
+    final diff = (tip.flowRate - targetFlowRate).abs();
+    final percentDiff = diff / targetFlowRate;
+    
+    return 1.0 / (1.0 + percentDiff * 10.0);
   }
 
   Future<List<TipModel>> searchTips({
     required double pressureValue,
     required double flowRateValue,
     required double spacingValue,
-    required double speedValue,
     required int applicationType,
     required int application,
     required int actionMode,
@@ -78,46 +114,33 @@ class TipService {
     try {
       await debugExistingValues();
 
+      final vazaoIds = await _findVazaoIdsWithPriority(
+        flowRateValue,
+        primaryTolerance: 0.5, 
+        secondaryTolerance: 1.0, 
+      );
+
       final pressaoIds = await _findIdsByValueWithTolerance(
         'pressao',
         'bar',
         pressureValue,
-        absoluteTolerance: 0.5,
-        percentTolerance: 10,
-      );
-
-      final vazaoIds = await _findIdsByValueWithTolerance(
-        'vazao',
-        'litros',
-        flowRateValue,
-        absoluteTolerance: 0.5,
-        percentTolerance: 10,
+        absoluteTolerance: 2.0, 
+        percentTolerance: 15,
       );
 
       final spacingIds = await _findIdsByValueWithTolerance(
         'espacamento',
         'cm',
         spacingValue,
-        absoluteTolerance: 10,
-        percentTolerance: 20,
+        absoluteTolerance: 20, 
+        percentTolerance: 25,
       );
 
-      final speedIds = await _findIdsByValueWithTolerance(
-        'velocidade',
-        'km_h',
-        speedValue,
-        absoluteTolerance: 0.5,
-        percentTolerance: 10,
-      );
-
-      if (pressaoIds.isEmpty ||
-          vazaoIds.isEmpty ||
-          spacingIds.isEmpty ||
-          speedIds.isEmpty) {
+      if (vazaoIds.isEmpty) {
         return [];
       }
 
-      final response = await _supabase
+      final query = _supabase
           .from(_tableName)
           .select('''
             *, 
@@ -126,7 +149,6 @@ class TipService {
             pressao(bar), 
             vazao(litros), 
             espacamento(cm), 
-            velocidade(km_h),
             tipo_aplicacao(tipo_aplicacao), 
             aplicacao(aplicacao), 
             modo_acao(modo_acao), 
@@ -137,11 +159,16 @@ class TipService {
           .eq('aplicacao_id', application)
           .eq('modo_acao_id', actionMode)
           .eq('pwm_id', pwmId)
-          .inFilter('pressao_id', pressaoIds)
-          .inFilter('vazao_id', vazaoIds)
-          .inFilter('espacamento_id', spacingIds)
-          .inFilter('velocidade_id', speedIds)
-          .order('id', ascending: true);
+          .inFilter('vazao_id', vazaoIds); 
+
+      if (pressaoIds.isNotEmpty) {
+        query.inFilter('pressao_id', pressaoIds);
+      }
+      if (spacingIds.isNotEmpty) {
+        query.inFilter('espacamento_id', spacingIds);
+      }
+
+      final response = await query.order('id', ascending: true);
 
       if (response.isEmpty) {
         return [];
@@ -149,8 +176,8 @@ class TipService {
 
       final allTips = response.map((json) => TipModel.fromJson(json)).toList();
 
-      final filteredTips = _filterTipsByModel(
-          allTips, pressureValue, flowRateValue, spacingValue, speedValue);
+      final filteredTips = _filterTipsByFlowRatePriority(
+          allTips, pressureValue, flowRateValue, spacingValue);
 
       return filteredTips;
     } catch (e) {
@@ -158,55 +185,51 @@ class TipService {
     }
   }
 
-  List<TipModel> _filterTipsByModel(
-    List<TipModel> allTips,
-    double targetPressure,
-    double targetFlowRate,
-    double targetSpacing,
-    double targetSpeed,
-  ) {
-    final modelGroups = <String, List<TipModel>>{};
 
-    for (var tip in allTips) {
-      final modelName = tip.model;
-      if (!modelGroups.containsKey(modelName)) {
-        modelGroups[modelName] = [];
-      }
-      modelGroups[modelName]!.add(tip);
+List<TipModel> _filterTipsByFlowRatePriority(
+  List<TipModel> allTips,
+  double targetPressure,
+  double targetFlowRate,
+  double targetSpacing,
+) {
+  final modelGroups = <String, List<TipModel>>{};
+  for (var tip in allTips) {
+    final modelName = tip.model; 
+    if (!modelGroups.containsKey(modelName)) {
+      modelGroups[modelName] = [];
     }
-
-    final result = <TipModel>[];
-
-    modelGroups.forEach((model, tips) {
-      if (tips.length == 1) {
-        result.add(tips.first);
-      } else {
-        TipModel closestTip = tips.first;
-        double smallestDifference = _calculateTotalDifference(closestTip,
-            targetPressure, targetFlowRate, targetSpacing, targetSpeed);
-
-        for (var tip in tips.skip(1)) {
-          final difference = _calculateTotalDifference(
-              tip, targetPressure, targetFlowRate, targetSpacing, targetSpeed);
-          if (difference < smallestDifference) {
-            smallestDifference = difference;
-            closestTip = tip;
-          }
-        }
-        result.add(closestTip);
-      }
-    });
-
-    result.sort((a, b) {
-      final diffA = _calculateTotalDifference(
-          a, targetPressure, targetFlowRate, targetSpacing, targetSpeed);
-      final diffB = _calculateTotalDifference(
-          b, targetPressure, targetFlowRate, targetSpacing, targetSpeed);
-      return diffA.compareTo(diffB);
-    });
-
-    return result;
+    modelGroups[modelName]!.add(tip);
   }
+
+  final result = <TipModel>[];
+
+  modelGroups.forEach((model, tips) {
+    if (tips.length == 1) {
+      result.add(tips.first);
+    } else {
+      TipModel bestFlowRateTip = tips.first;
+      double bestFlowRateSimilarity = _calculateFlowRateSimilarity(
+          bestFlowRateTip, targetFlowRate);
+
+      for (var tip in tips.skip(1)) {
+        final similarity = _calculateFlowRateSimilarity(tip, targetFlowRate);
+        if (similarity > bestFlowRateSimilarity) {
+          bestFlowRateSimilarity = similarity;
+          bestFlowRateTip = tip;
+        }
+      }
+      result.add(bestFlowRateTip);
+    }
+  });
+
+  result.sort((a, b) {
+    final similarityA = _calculateFlowRateSimilarity(a, targetFlowRate);
+    final similarityB = _calculateFlowRateSimilarity(b, targetFlowRate);
+    return similarityB.compareTo(similarityA);
+  });
+
+  return result;
+}
 
   Future<List<double>> getDistinctValues(String field) async {
     final tableMap = {

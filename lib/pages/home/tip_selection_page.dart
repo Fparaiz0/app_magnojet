@@ -71,6 +71,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     'Fungicida': 1,
     'Herbicida': 2,
     'Inseticida': 3,
+    'Não se aplica': 4,
   };
 
   final Map<String, int> _actionModeToId = {
@@ -86,16 +87,14 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     {'name': 'Área Total', 'icon': Icons.grass_rounded},
     {'name': 'Barra Curta', 'icon': Icons.water_drop_rounded},
     {'name': 'Conforto Térmico', 'icon': MdiIcons.cow},
-    {
-      'name': 'Turbo Atomizador',
-      'icon': Icons.settings_input_component_rounded
-    },
+    {'name': 'Turbo Atomizador', 'icon': Icons.settings_input_component_rounded},
   ];
 
   final List<Map<String, dynamic>> _applications = [
     {'name': 'Fungicida', 'icon': Icons.science_rounded},
     {'name': 'Herbicida', 'icon': Icons.eco_rounded},
     {'name': 'Inseticida', 'icon': Icons.bug_report_rounded},
+    {'name': 'Não se aplica', 'icon': Icons.cancel_rounded},
   ];
 
   final List<Map<String, dynamic>> _actionModes = [
@@ -106,7 +105,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generatePressureValues() {
     final values = <double>[];
-    for (double i = 1.0; i <= 10.0; i += 0.1) {
+    for (double i = 1.0; i <= 15.0; i += 0.1) {
       values.add(double.parse(i.toStringAsFixed(1)));
     }
     return values;
@@ -114,7 +113,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generateFlowRatePerHectareValues() {
     final values = <double>[];
-    for (double i = 50.0; i <= 500.0; i += 10.0) {
+    for (double i = 50.0; i <= 1000.0; i += 5.0) {
       values.add(i);
     }
     return values;
@@ -122,7 +121,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generateSpacingValues() {
     final values = <double>[];
-    for (double i = 20.0; i <= 100.0; i += 0.5) {
+    for (double i = 35.0; i <= 100.0; i += 0.5) {
       values.add(i);
     }
     return values;
@@ -130,7 +129,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generateSpeedValues() {
     final values = <double>[];
-    for (double i = 1.0; i <= 20.0; i += 0.5) {
+    for (double i = 4.0; i <= 25.0; i += 0.5) {
       values.add(i);
     }
     return values;
@@ -190,26 +189,19 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   Future<void> _searchTips() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedApplicationType == null ||
-        _selectedApplication == null ||
-        _selectedActionMode == null) {
+    if (_selectedApplicationType == null || _selectedActionMode == null) {
       return;
     }
 
-    final int applicationTypeId =
-        _applicationTypeToId[_selectedApplicationType!] ?? 0;
-    final int applicationCId = _applicationToId[_selectedApplication!] ?? 0;
+    final int applicationTypeId = _applicationTypeToId[_selectedApplicationType!] ?? 0;
+    final int applicationCId = _applicationToId[_selectedApplication ?? 'Não se aplica'] ?? 4;
     final int actionModeId = _actionModeToId[_selectedActionMode!] ?? 0;
     final int pwmId = _hasPWM ? 1 : 2;
 
-    if (_pressure == 0.0 ||
-        _flowRate == 0.0 ||
-        _spacing == 0.0 ||
-        _speed == 0.0) {
+    if (_pressure == 0.0 || _flowRate == 0.0 || _spacing == 0.0 || _speed == 0.0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              const Text('Selecione valores válidos para todos os parâmetros.'),
+          content: const Text('Selecione valores válidos para todos os parâmetros.'),
           backgroundColor: Colors.orange.shade700,
         ),
       );
@@ -227,7 +219,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         pressureValue: _pressure,
         flowRateValue: _flowRate,
         spacingValue: _spacing,
-        speedValue: _speed,
         applicationType: applicationTypeId,
         application: applicationCId,
         actionMode: actionModeId,
@@ -247,9 +238,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       setState(() {
         _recommendedTips = results;
         _availableDropletSizes = availableSizes.toList();
-
         _selectedDropletSizes = availableSizes;
-
         _isLoading = false;
         _showResults = true;
       });
@@ -329,8 +318,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         width: width,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color:
-              isSelected ? primaryColor.withValues(alpha: 0.1) : Colors.white,
+          color: isSelected ? primaryColor.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? primaryColor : Colors.grey.shade300,
@@ -380,9 +368,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 subtitle,
                 style: TextStyle(
                   fontSize: 10,
-                  color: isSelected
-                      ? primaryColor.withValues(alpha: 0.8)
-                      : Colors.grey.shade600,
+                  color: isSelected ? primaryColor.withValues(alpha: 0.8) : Colors.grey.shade600,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -444,9 +430,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                       }
                     : null,
                 style: IconButton.styleFrom(
-                  backgroundColor: canDecrement
-                      ? primaryColor.withValues(alpha: 0.1)
-                      : Colors.grey.shade100,
+                  backgroundColor: canDecrement ? primaryColor.withValues(alpha: 0.1) : Colors.grey.shade100,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -486,9 +470,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                       }
                     : null,
                 style: IconButton.styleFrom(
-                  backgroundColor: canIncrement
-                      ? primaryColor.withValues(alpha: 0.1)
-                      : Colors.grey.shade100,
+                  backgroundColor: canIncrement ? primaryColor.withValues(alpha: 0.1) : Colors.grey.shade100,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -554,9 +536,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                           }
                         : null,
                     style: IconButton.styleFrom(
-                      backgroundColor: canDecrement
-                          ? primaryColor.withValues(alpha: 0.1)
-                          : Colors.grey.shade100,
+                      backgroundColor: canDecrement ? primaryColor.withValues(alpha: 0.1) : Colors.grey.shade100,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -584,7 +564,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                         ),
                       ),
                       Text(
-                        'Equivale a: ${_flowRate.toStringAsFixed(2)} L/min',
+                        'Vazão: ${_flowRate.toStringAsFixed(2)} L/min',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.green.shade700,
@@ -605,9 +585,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                           }
                         : null,
                     style: IconButton.styleFrom(
-                      backgroundColor: canIncrement
-                          ? primaryColor.withValues(alpha: 0.1)
-                          : Colors.grey.shade100,
+                      backgroundColor: canIncrement ? primaryColor.withValues(alpha: 0.1) : Colors.grey.shade100,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -703,238 +681,266 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   }
 
   Widget _buildResultSection() {
-    if (!_showResults) {
-      return const SizedBox.shrink();
-    }
+  if (!_showResults) {
+    return const SizedBox.shrink();
+  }
 
-    final filteredTips = _getFilteredTips();
-
-    if (filteredTips.isEmpty) {
-      return AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        margin: const EdgeInsets.symmetric(vertical: 20),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.orange.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.orange.shade200),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.filter_alt_off_rounded,
-                  size: 40, color: Colors.orange.shade700),
-              const SizedBox(height: 10),
-              const Text(
-                'Nenhuma ponta encontrada com os filtros selecionados.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
-              ),
-              const SizedBox(height: 8),
-              if (_availableDropletSizes.isNotEmpty)
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedDropletSizes = _availableDropletSizes.toSet();
-                    });
-                  },
-                  child: const Text('Mostrar todos os tamanhos de gota'),
-                ),
-            ],
-          ),
-        ),
-      );
-    }
+  final filteredTips = _getFilteredTips();
 
     if (_recommendedTips.isEmpty) {
-      return AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        margin: const EdgeInsets.symmetric(vertical: 20),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.orange.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.orange.shade200),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.warning_amber_rounded,
-                  size: 40, color: Colors.orange.shade700),
-              const SizedBox(height: 10),
-              const Text(
-                'Nenhuma ponta encontrada.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'Tente ajustar para ampliar os resultados da busca.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.black54),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
+      margin: const EdgeInsets.symmetric(vertical: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: secondaryColor,
+        color: Colors.orange.shade50,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: primaryColor.withValues(alpha: 0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: Colors.orange.shade200),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildDropletSizeFilter(),
-          const SizedBox(height: 20),
-          _buildSectionHeader('Pontas Recomendadas', Icons.verified_rounded,
-              subtitle:
-                  'Baseado nos parâmetros informados (${filteredTips.length} resultados)'),
-          ...filteredTips.map((tip) {
-            final dropletSize = _dropletSizeMap[tip.dropletSizeId] ?? 'N/A';
-
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey.shade200, width: 1),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.warning_amber_rounded,
+                size: 40, color: Colors.orange.shade700),
+            const SizedBox(height: 10),
+            const Text(
+              'Nenhuma ponta encontrada.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
               ),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 1,
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Tente ajustar os parâmetros para ampliar os resultados da busca.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  return AnimatedContainer(
+    duration: const Duration(milliseconds: 500),
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: secondaryColor,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+      boxShadow: [
+        BoxShadow(
+          color: primaryColor.withValues(alpha: 0.1),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDropletSizeFilter(),
+        const SizedBox(height: 20),
+        
+        if (_pressure > 5.0)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange.shade300),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, 
+                    color: Colors.orange.shade700, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Pressão acima de 5 bar. Considere trabalhar em pressões mais baixas para melhor eficiência.',
+                    style: TextStyle(
+                      color: Colors.orange.shade800,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        
+        _buildSectionHeader('Pontas Recomendadas', Icons.verified_rounded,
+            subtitle: 'Baseado nos parâmetros informados (${filteredTips.length} resultados)'),
+        
+        ...filteredTips.map((tip) {
+          final dropletSize = _dropletSizeMap[tip.dropletSizeId] ?? 'N/A';
+          final isHighPressure = tip.pressure > 5.0;
+
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: isHighPressure ? Colors.orange.shade300 : Colors.grey.shade200,
+                width: isHighPressure ? 2 : 1,
+              ),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
                         ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          tip.imageUrl ?? '',
-                          width: 100,
-                          height: 140,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                            color: Colors.grey.shade100,
-                            child: const Icon(
-                              Icons.agriculture_outlined,
-                              size: 36,
-                              color: Colors.grey,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            tip.imageUrl ?? '',
+                            width: 100,
+                            height: 140,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: Colors.grey.shade100,
+                              child: const Icon(
+                                Icons.agriculture_outlined,
+                                size: 36,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${tip.name} - ${tip.model}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                
+                      if (isHighPressure)
+                        Container(
+                          margin: const EdgeInsets.only(top: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.orange.shade200),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                '${tip.name} - ${tip.model}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                              Icon(Icons.info_outline_rounded, 
+                                  size: 14, color: Colors.orange.shade700),
+                              const SizedBox(width: 4),
+                              Expanded( 
+                                child: Text(
+                                  'Pressão alta - considere opções mais baixa',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.orange.shade700,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 2, 
+                                  overflow: TextOverflow.ellipsis, 
                                 ),
                               ),
-                              const SizedBox(height: 6),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 6,
-                            children: [
-                              _buildInfoChip(
-                                _formatExactValue(tip.flowRate, 'L/min'),
-                                Icons.speed_rounded,
-                              ),
-                              _buildInfoChip(
-                                _formatExactValue(tip.pressure, 'bar'),
-                                Icons.compress_rounded,
-                              ),
-                              _buildInfoChip(
-                                _formatExactValue(tip.spacing, 'cm'),
-                                Icons.straighten_rounded,
-                              ),
-                              _buildInfoChip(
-                                _formatExactValue(tip.speed, 'km/h'),
-                                Icons.speed_rounded,
-                              ),
-                              _buildInfoChip(
-                                dropletSize,
-                                Icons.water_drop_rounded,
-                              ),
-                              _buildInfoChip(
-                                _hasPWM ? 'Sim' : 'Não',
-                                Icons.flash_on_rounded,
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
+                                
+                                const SizedBox(height: 6),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
+                              children: [
+                                _buildInfoChip(
+                                  _formatExactValue(tip.flowRate, 'L/min'),
+                                  Icons.speed_rounded,
+                                ),
+                                _buildInfoChip(
+                                  _formatExactValue(tip.pressure, 'bar'),
+                                  Icons.compress_rounded,
+                                ),
+                                _buildInfoChip(
+                                  _formatExactValue(tip.spacing, 'cm'),
+                                  Icons.straighten_rounded,
+                                ),
+                                _buildInfoChip(
+                                  _formatExactValue(_speed, 'km/h'),
+                                  Icons.speed_rounded,
+                                ),
+                                _buildInfoChip(
+                                  dropletSize,
+                                  Icons.water_drop_rounded,
+                                ),
+                                _buildInfoChip(
+                                  _hasPWM ? 'Sim' : 'Não',
+                                  Icons.flash_on_rounded,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
-          const SizedBox(height: 16),
-          Center(
-            child: TextButton.icon(
-              onPressed: _resetForm,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Nova Busca'),
-              style: TextButton.styleFrom(
-                foregroundColor: primaryColor,
+                      const SizedBox(width: 12),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
+          );
+        }),
+        
+        const SizedBox(height: 16),
+        Center(
+          child: TextButton.icon(
+            onPressed: _resetForm,
+            icon: const Icon(Icons.refresh_rounded),
+            label: const Text('Nova Busca'),
+            style: TextButton.styleFrom(
+              foregroundColor: primaryColor,
+            ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildLoadingIndicator() {
     return _isLoading
@@ -1038,10 +1044,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildSectionHeader(
-                                  'Tipo de Aplicação', Icons.category_rounded,
-                                  subtitle:
-                                      'Selecione o tipo de aplicação desejada'),
+                              _buildSectionHeader('Tipo de Aplicação', Icons.category_rounded,
+                                  subtitle: 'Selecione o tipo de aplicação desejada'),
                               const SizedBox(height: 16),
                               _buildResponsiveButtonGrid(
                                 items: _applicationTypes,
@@ -1069,11 +1073,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildSectionHeader(
-                                  'Filtros de Produto e Tecnologia',
-                                  Icons.filter_alt_rounded,
-                                  subtitle:
-                                      'Configure o produto e a tecnologia utilizada'),
+                              _buildSectionHeader('Filtros de Produto e Tecnologia', Icons.filter_alt_rounded,
+                                  subtitle: 'Configure o produto e a tecnologia utilizada'),
                               const SizedBox(height: 20),
                               const Text(
                                 'Tipo de Produto',
@@ -1108,10 +1109,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                               _buildResponsiveButtonGrid(
                                 items: [
                                   ..._actionModes,
-                                  {
-                                    'name': 'PWM',
-                                    'icon': Icons.flash_on_rounded
-                                  }
+                                  {'name': 'PWM', 'icon': Icons.flash_on_rounded}
                                 ],
                                 selectedValue: _selectedActionMode,
                                 isPWM: _hasPWM,
@@ -1141,10 +1139,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                           padding: const EdgeInsets.all(20),
                           child: Column(
                             children: [
-                              _buildSectionHeader(
-                                  'Parâmetros Técnicos', Icons.tune_rounded,
-                                  subtitle:
-                                      'Ajuste os valores usando os botões + e -'),
+                              _buildSectionHeader('Parâmetros Técnicos', Icons.tune_rounded,
+                                  subtitle: 'Ajuste os valores usando os botões + e -'),
                               _buildIncrementDecrementSelection(
                                 label: 'Pressão',
                                 currentValue: _pressure,
@@ -1210,8 +1206,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 2,
                     ),
                     child: Text(
@@ -1244,18 +1239,15 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         final bool isActionMode = items.any((item) => item['name'] == 'PWM');
 
         if (isActionMode) {
-          final nonPWMItems =
-              items.where((item) => item['name'] != 'PWM').toList();
-          final pwmItems =
-              items.where((item) => item['name'] == 'PWM').toList();
+          final nonPWMItems = items.where((item) => item['name'] != 'PWM').toList();
+          final pwmItems = items.where((item) => item['name'] == 'PWM').toList();
 
           final hasPWM = pwmItems.isNotEmpty;
           final pwmItem = hasPWM ? pwmItems.first : null;
 
           final availableWidth = constraints.maxWidth;
           final totalSpacing = 12 * (nonPWMItems.length - 1);
-          final buttonWidth =
-              (availableWidth - totalSpacing) / nonPWMItems.length;
+          final buttonWidth = (availableWidth - totalSpacing) / nonPWMItems.length;
 
           return Column(
             children: [
@@ -1320,15 +1312,13 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           );
         } else {
           final availableWidth = constraints.maxWidth;
-          final itemsPerRow = 3;
+          final itemsPerRow = crossAxisCount;
           final totalSpacing = 12 * (itemsPerRow - 1);
           final buttonWidth = (availableWidth - totalSpacing) / itemsPerRow;
 
           final List<List<Map<String, dynamic>>> rows = [];
           for (int i = 0; i < items.length; i += itemsPerRow) {
-            final end = (i + itemsPerRow) < items.length
-                ? (i + itemsPerRow)
-                : items.length;
+            final end = (i + itemsPerRow) < items.length ? (i + itemsPerRow) : items.length;
             rows.add(items.sublist(i, end));
           }
 
@@ -1340,9 +1330,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
-                  mainAxisAlignment: isLastRow && hasSingleItem
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.start,
+                  mainAxisAlignment: isLastRow && hasSingleItem ? MainAxisAlignment.center : MainAxisAlignment.start,
                   children: rowItems.asMap().entries.map((entry) {
                     final index = entry.key;
                     final item = entry.value;
@@ -1377,8 +1365,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     }
 
     return _recommendedTips.where((tip) {
-      return tip.dropletSizeId != null &&
-          _selectedDropletSizes.contains(tip.dropletSizeId!);
+      return tip.dropletSizeId != null && _selectedDropletSizes.contains(tip.dropletSizeId!);
     }).toList();
   }
 

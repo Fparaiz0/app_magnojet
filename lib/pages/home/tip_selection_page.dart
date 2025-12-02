@@ -861,7 +861,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                               const SizedBox(width: 4),
                               Expanded( 
                                 child: Text(
-                                  'Pressão alta - considere opções mais baixa',
+                                  'Pressão alta!',
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.orange.shade700,

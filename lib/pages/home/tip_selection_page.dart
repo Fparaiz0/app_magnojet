@@ -4,7 +4,7 @@ import '../../../models/tip_selection_model.dart';
 import '../../../services/tip_selection_service.dart';
 import 'home_page.dart';
 import 'tip_details_page.dart';
-import 'FavoritesPage.dart';
+import 'favorites_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/custom_drawer.dart';
 import '../auth/login_page.dart';

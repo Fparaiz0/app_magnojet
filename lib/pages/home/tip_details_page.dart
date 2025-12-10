@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/tip_selection_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/custom_drawer.dart';
-import 'FavoritesPage.dart';
+import 'favorites_page.dart';
 import '../auth/login_page.dart';
 import 'home_page.dart';
 import 'tip_selection_page.dart';

@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../auth/login_page.dart';
 import 'tip_selection_page.dart';
 import '../../widgets/custom_drawer.dart';
+import 'favorites_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +16,9 @@ class _HomePageState extends State<HomePage> {
   final supabase = Supabase.instance.client;
   String _userName = '';
   bool _isLoading = true;
+
+  static const primaryColor = Color(0xFF15325A);
+  static const backgroundColor = Color(0xFFF5F7FA);
 
   @override
   void initState() {
@@ -116,34 +120,109 @@ class _HomePageState extends State<HomePage> {
     required String title,
     required Color color,
     required VoidCallback onTap,
+    bool isDisabled = false,
   }) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        onTap: isDisabled ? null : onTap,
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDisabled
+                  ? Colors.grey.shade200
+                  : color.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 36, color: color),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: color,
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: isDisabled
+                      ? Colors.grey.shade100
+                      : color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 28,
+                  color: isDisabled ? Colors.grey.shade400 : color,
                 ),
               ),
+              const SizedBox(height: 8),
+              Flexible(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDisabled ? Colors.grey.shade400 : primaryColor,
+                  ),
+                ),
+              ),
+              if (isDisabled)
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Em breve',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 60,
+            height: 60,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              color: primaryColor,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Carregando dados...',
+            style: TextStyle(
+              fontSize: 16,
+              color: primaryColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -152,11 +231,25 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF15325A),
-        title: Image.asset(
-          'assets/logo_branca.png',
-          height: 50,
-          width: 100,
+        backgroundColor: primaryColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/logo_branca.png',
+              height: 28,
+              width: 70,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Home',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -164,24 +257,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: () {},
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            onSelected: (value) {
-              if (value == 'logout') _showLogoutDialog();
-            },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<String>(
-                value: 'logout',
-                child: Row(
-                  children: const [
-                    Icon(Icons.logout, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Sair', style: TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-            ],
+            tooltip: 'Histórico',
           ),
         ],
       ),
@@ -189,7 +265,14 @@ class _HomePageState extends State<HomePage> {
         currentRoute: '/home',
         userName: _userName,
         isLoadingUser: _isLoading,
-        onHomeTap: () => Navigator.pop(context),
+        onHomeTap: () {
+          Navigator.pop(context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+            (route) => false,
+          );
+        },
         onTipsTap: () {
           Navigator.pop(context);
           Navigator.push(
@@ -197,116 +280,185 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(builder: (context) => const TipSelectionPage()),
           );
         },
-        onLogoutTap: () => _showLogoutDialog(),
+        onFavoritesTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const FavoritesPage()),
+          );
+        },
+        onLogoutTap: () => _showLogoutDialog,
       ),
       body: _isLoading
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(Color(0xFF15325A)),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Carregando dados do usuário...',
-                    style: TextStyle(color: Color(0xFF15325A)),
-                  ),
-                ],
-              ),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0xFF15325A).withValues(alpha: 0.2),
-                        width: 1.5,
+          ? _buildLoadingState()
+          : Container(
+              color: backgroundColor,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withValues(alpha: 0.15),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Bem-vindo(a), $_userName!',
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF15325A),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: primaryColor.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.person_rounded,
+                                  color: primaryColor,
+                                  size: 22,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Bem-vindo(a),',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                    Text(
+                                      _userName,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const Text(
-                          'Utilize o sistema para otimizar a seleção e aplicação de pontas de pulverização, garantindo maior eficiência no campo.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black54,
-                            height: 1.4,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    childAspectRatio: 1.15,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    padding: EdgeInsets.zero,
-                    children: [
-                      _buildFeatureCard(
-                        icon: Icons.search_rounded,
-                        title: 'Selecionar\nPontas',
-                        color: const Color(0xFF15325A),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TipSelectionPage(),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: backgroundColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: primaryColor.withValues(alpha: 0.1)),
                             ),
-                          );
-                        },
+                            child: const Text(
+                              'Utilize o sistema para encontrar as pontas de pulverização mais adequadas para sua operação agrícola.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      _buildFeatureCard(
-                        icon: Icons.calculate_rounded,
-                        title: 'Cálculos\nde Vazão',
-                        color: const Color(0xFF1E3A5C),
-                        onTap: () {},
+                    ),
+                    const SizedBox(height: 24),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Funcionalidades',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
                       ),
-                      _buildFeatureCard(
-                        icon: Icons.analytics_rounded,
-                        title: 'Tabelas\nTécnicas',
-                        color: const Color(0xFF1E3A5C),
-                        onTap: () {},
-                      ),
-                      _buildFeatureCard(
-                        icon: Icons.compare_arrows_rounded,
-                        title: 'Comparar\nPontas',
-                        color: const Color(0xFF15325A),
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 12),
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      childAspectRatio: 0.95,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      padding: EdgeInsets.zero,
+                      children: [
+                        _buildFeatureCard(
+                          icon: Icons.search_rounded,
+                          title: 'Selecionar Pontas',
+                          color: primaryColor,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TipSelectionPage(),
+                              ),
+                            );
+                          },
+                        ),
+                        _buildFeatureCard(
+                          icon: Icons.calculate_rounded,
+                          title: 'Cálculos de Vazão',
+                          color: primaryColor,
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Funcionalidade em desenvolvimento'),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                          },
+                          isDisabled: true,
+                        ),
+                        _buildFeatureCard(
+                          icon: Icons.analytics_rounded,
+                          title: 'Tabelas Técnicas',
+                          color: primaryColor,
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Funcionalidade em desenvolvimento'),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                          },
+                          isDisabled: true,
+                        ),
+                        _buildFeatureCard(
+                          icon: Icons.compare_arrows_rounded,
+                          title: 'Comparar Pontas',
+                          color: primaryColor,
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Funcionalidade em desenvolvimento'),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                          },
+                          isDisabled: true,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
     );

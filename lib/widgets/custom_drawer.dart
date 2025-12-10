@@ -12,6 +12,7 @@ class CustomDrawer extends StatelessWidget {
   final VoidCallback? onHistoryTap;
   final VoidCallback? onSettingsTap;
   final VoidCallback? onLogoutTap;
+  final VoidCallback? onFavoritesTap;
 
   const CustomDrawer({
     super.key,
@@ -25,28 +26,36 @@ class CustomDrawer extends StatelessWidget {
     this.onHistoryTap,
     this.onSettingsTap,
     this.onLogoutTap,
+    this.onFavoritesTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
-    String displayUserName =
-        userName.isNotEmpty ? userName.toUpperCase() : 'USUÁRIO';
-    String displayInitial =
-        userName.isNotEmpty ? userName[0].toUpperCase() : 'U';
+    String displayUserName = userName.isNotEmpty ? userName : 'Usuário';
+    String displayInitial = userName.isNotEmpty ? userName[0] : 'U';
 
     return Drawer(
-      width: 260,
+      width: 280,
       child: Container(
         color: const Color(0xFF15325A),
         child: SafeArea(
           child: Column(
             children: [
               Container(
-                height: 115,
+                height: 160,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E3A8A),
+                      Color(0xFF15325A),
+                    ],
+                  ),
                   border: Border(
                     bottom: BorderSide(color: Colors.white24, width: 1),
                   ),
@@ -57,88 +66,166 @@ class CustomDrawer extends StatelessWidget {
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.white,
-                            child: Text(
-                              displayInitial,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF15325A),
+                          Row(
+                            children: [
+                              Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Colors.black.withValues(alpha: 0.2),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    displayInitial.toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF15325A),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      displayUserName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      user?.email ?? 'sem_email@magnojet.com',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            displayUserName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ),
-                          const SizedBox(height: 1),
-                          Text(
-                            user?.email ?? 'sem_email@magnojet.com',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11,
+                            child: const Row(
+                              children: [
+                                Icon(Icons.verified_user_rounded,
+                                    color: Colors.white70, size: 16),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Usuário ativo',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
               ),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.only(top: 12),
+                  padding: const EdgeInsets.only(top: 20),
                   children: [
+                    _buildSectionTitle('Principal'),
                     _buildDrawerItem(
+                      context: context,
                       icon: Icons.home_rounded,
                       title: 'Início',
                       isSelected: currentRoute == '/home',
-                      onTap: onHomeTap ?? () => Navigator.pop(context),
+                      onTap: onHomeTap,
                     ),
                     _buildDrawerItem(
+                      context: context,
                       icon: Icons.search_rounded,
                       title: 'Selecionar Pontas',
                       isSelected: currentRoute == '/tips',
-                      onTap: onTipsTap ?? () => Navigator.pop(context),
+                      onTap: onTipsTap,
                     ),
                     _buildDrawerItem(
+                      context: context,
+                      icon: Icons.bookmark_rounded,
+                      title: 'Favoritas',
+                      isSelected: currentRoute == '/favorites',
+                      onTap: onFavoritesTap,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildSectionTitle('Ferramentas'),
+                    _buildDrawerItem(
+                      context: context,
                       icon: Icons.calculate_rounded,
                       title: 'Cálculos',
                       isSelected: currentRoute == '/calculations',
-                      onTap: onCalculationsTap ?? () => Navigator.pop(context),
+                      onTap: onCalculationsTap,
                     ),
                     _buildDrawerItem(
+                      context: context,
                       icon: Icons.agriculture_rounded,
                       title: 'Catálogo',
                       isSelected: currentRoute == '/catalog',
-                      onTap: onCatalogTap ?? () => Navigator.pop(context),
+                      onTap: onCatalogTap,
                     ),
+                    const SizedBox(height: 16),
+                    _buildSectionTitle('Outros'),
                     _buildDrawerItem(
+                      context: context,
                       icon: Icons.history_rounded,
                       title: 'Histórico',
                       isSelected: currentRoute == '/history',
-                      onTap: onHistoryTap ?? () => Navigator.pop(context),
+                      onTap: onHistoryTap,
                     ),
                     _buildDrawerItem(
+                      context: context,
                       icon: Icons.settings_rounded,
                       title: 'Configurações',
                       isSelected: currentRoute == '/settings',
-                      onTap: onSettingsTap ?? () => Navigator.pop(context),
+                      onTap: onSettingsTap,
+                    ),
+                    _buildDrawerItem(
+                      context: context,
+                      icon: Icons.help_outline_rounded,
+                      title: 'Ajuda',
+                      isSelected: currentRoute == '/help',
+                      onTap: null,
                     ),
                   ],
                 ),
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: const BoxDecoration(
                   border: Border(
                     top: BorderSide(color: Colors.white24, width: 1),
@@ -146,29 +233,46 @@ class CustomDrawer extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    ListTile(
-                      leading: const Icon(Icons.logout_rounded,
-                          color: Colors.redAccent, size: 20),
-                      title: const Text(
-                        'Sair',
-                        style: TextStyle(
-                          color: Colors.redAccent,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade700.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.logout_rounded,
+                            color: Colors.redAccent, size: 22),
+                        title: const Text(
+                          'Sair da Conta',
+                          style: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
                         ),
+                        onTap: onLogoutTap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                        dense: true,
                       ),
-                      onTap: onLogoutTap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      dense: true,
                     ),
+                    const SizedBox(height: 12),
                     const Text(
                       'MagnoJet v1.0.0',
                       style: TextStyle(
                         color: Colors.white54,
                         fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      '© 2024 Todos os direitos reservados',
+                      style: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -181,38 +285,88 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white54,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
   Widget _buildDrawerItem({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required bool isSelected,
     required VoidCallback? onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       decoration: BoxDecoration(
         color: isSelected
             ? Colors.white.withValues(alpha: 0.15)
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: isSelected ? Colors.white : Colors.white70,
-          size: 20,
+        leading: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.white.withValues(alpha: 0.2)
+                : Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            color: isSelected ? Colors.white : Colors.white70,
+            size: 18,
+          ),
         ),
         title: Text(
           title,
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.white70,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 13,
+            fontSize: 14,
           ),
         ),
-        onTap: onTap,
-        dense: true,
+        trailing: isSelected
+            ? Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              )
+            : null,
+        onTap: onTap ??
+            () {
+              Navigator.pop(context);
+
+              if (title == 'Favoritas') {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Página de favoritos não configurada'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-        minLeadingWidth: 30,
+        minLeadingWidth: 36,
       ),
     );
   }

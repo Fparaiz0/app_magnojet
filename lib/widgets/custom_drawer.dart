@@ -370,48 +370,4 @@ class CustomDrawer extends StatelessWidget {
       ),
     );
   }
-
-  void _showHelpDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.help_outline_rounded, color: Color(0xFF15325A)),
-            SizedBox(width: 8),
-            Text('Ajuda'),
-          ],
-        ),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Sistema MagnoJet',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Para suporte técnico ou dúvidas, entre em contato:',
-              style: TextStyle(fontSize: 14),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '📧 magnojet@magnojet.com.br\n📱 +55 (43) 3772-0025',
-              style: TextStyle(fontSize: 14),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
-          ),
-        ],
-      ),
-    );
-  }
 }

@@ -6,6 +6,7 @@ import '../auth/login_page.dart';
 import 'home_page.dart';
 import 'tip_details_page.dart';
 import 'tip_selection_page.dart';
+import 'settings_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -127,14 +128,16 @@ class _FavoritesPageState extends State<FavoritesPage> {
           favoritesResponse.map<int>((fav) => fav['tip_id'] as int).toList();
 
       final tipsResponse = await supabase.from('selecao').select('''
-            *,
-            pontas:pontas(id, ponta),
-            modelo:modelo(id, modelo),
-            pressao:pressao(id, bar),
-            vazao:vazao(id, litros),
-            espacamento:espacamento(id, cm),
-            tamanho_gota:tamanho_gota!inner(id, tamanho_gota)
-          ''').inFilter('id', tipIds).limit(100);
+	            *,
+	            pontas:pontas(id, ponta),
+	            modelo:modelo(id, modelo),
+	            pressao:pressao(id, bar),
+	            vazao:vazao(id, litros),
+	            espacamento:espacamento(id, cm),
+	            tamanho_gota:tamanho_gota!inner(id, tamanho_gota),
+	            modo_acao:modo_acao(modo_acao),
+	            aplicacao:aplicacao(aplicacao)
+	          ''').inFilter('id', tipIds).limit(100);
 
       final favoriteTips = tipsResponse
           .map<TipModel>((tip) => _convertSelecaoToTipModel(tip))
@@ -265,6 +268,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       speed: 12.0,
       imageUrl: localSafeParseString(selecaoData['image_url']),
       dropletSizeId: dropletSizeId,
+      modoAcao: localSafeParseString(getFirstValue('modo_acao', 'modo_acao')),
+      aplicacao: localSafeParseString(getFirstValue('aplicacao', 'aplicacao')),
     );
   }
 
@@ -925,6 +930,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
               (route) => false,
             );
           }
+        },
+        onSettingsTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
         },
         onLogoutTap: () => _showLogoutDialog(context),
       ),

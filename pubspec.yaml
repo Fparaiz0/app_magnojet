@@ -17,6 +17,7 @@ dependencies:
   path: ^1.9.1
   logger: ^2.3.0
   intl: ^0.20.2
+  shared_preferences: ^2.2.2
 
   # Ícones padrão do iOS.
   cupertino_icons: ^1.0.8

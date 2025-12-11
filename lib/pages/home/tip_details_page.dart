@@ -26,7 +26,7 @@ class TipDetailsPage extends StatefulWidget {
 }
 
 class _TipDetailsPageState extends State<TipDetailsPage> {
-  final supabase = Supabase.instance.client;
+  late final SupabaseClient supabase;
   String _userName = '';
   bool _isLoadingUser = true;
   bool _isFavorite = false;
@@ -39,8 +39,14 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
   @override
   void initState() {
     super.initState();
+    supabase = Supabase.instance.client;
     _loadUserData();
     _checkFavoriteStatus();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -107,18 +113,20 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
     final user = supabase.auth.currentUser;
 
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Faça login para salvar favoritos'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Faça login para salvar favoritos'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
       return;
     }
 
     if (_isLoadingFavorite) return;
 
-    setState(() => _isLoadingFavorite = true);
+    if (mounted) setState(() => _isLoadingFavorite = true);
 
     try {
       if (_isFavorite) {
@@ -315,6 +323,33 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
   }
 
   Widget _buildImageSection() {
+    final imageUrl = widget.tip.imageUrl;
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return Container(
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.image_not_supported_rounded,
+                  size: 40, color: Colors.grey.shade400),
+              const SizedBox(height: 8),
+              Text(
+                'Imagem não disponível',
+                style: TextStyle(color: Colors.grey.shade500),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Container(
       height: 200,
       width: double.infinity,
@@ -326,7 +361,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: Image.network(
-          widget.tip.imageUrl ?? '',
+          imageUrl,
           fit: BoxFit.contain,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
@@ -345,18 +380,12 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.agriculture_outlined,
-                  size: 60,
-                  color: Colors.grey.shade300,
-                ),
-                const SizedBox(height: 12),
+                Icon(Icons.broken_image_rounded,
+                    size: 40, color: Colors.red.shade400),
+                const SizedBox(height: 8),
                 Text(
-                  'Imagem não disponível',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade500,
-                  ),
+                  'Erro ao carregar imagem',
+                  style: TextStyle(color: Colors.red.shade500),
                 ),
               ],
             ),
@@ -371,6 +400,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
         widget.dropletSizeMap[widget.tip.dropletSizeId] ?? 'N/A';
 
     return Container(
+      margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -386,51 +416,61 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Especificações Técnicas',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: primaryColor,
-            ),
+          Row(
+            children: [
+              Icon(Icons.tune_rounded, color: primaryColor, size: 20),
+              const SizedBox(width: 8),
+              const Text(
+                'Especificações Técnicas',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF15325A),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Column(
             children: [
-              _buildDetailRow(
-                'Vazão',
-                '${widget.tip.flowRate.toStringAsFixed(2)} L/min',
-                icon: Icons.speed_rounded,
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildDetailRow(
+                      'Pressão',
+                      '${widget.tip.pressure.toStringAsFixed(1)} bar',
+                      icon: Icons.speed_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildDetailRow(
+                      'Vazão',
+                      '${widget.tip.flowRate.toStringAsFixed(1)} L/min',
+                      icon: Icons.water_drop_rounded,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
-              _buildDetailRow(
-                'Pressão de Trabalho',
-                '${widget.tip.pressure} bar',
-                icon: Icons.compress_rounded,
-              ),
-              const SizedBox(height: 12),
-              _buildDetailRow(
-                'Espaçamento Recomendado',
-                '${widget.tip.spacing.toStringAsFixed(1)} cm',
-                icon: Icons.straighten_rounded,
-              ),
-              const SizedBox(height: 12),
-              _buildDetailRow(
-                'Tamanho de Gota',
-                dropletSize,
-                icon: Icons.water_drop_rounded,
-              ),
-              const SizedBox(height: 12),
-              _buildDetailRow(
-                'Tecnologia',
-                widget.hasPWM ? 'PWM' : 'Convencional',
-                icon: Icons.flash_on_rounded,
-              ),
-              const SizedBox(height: 12),
-              _buildDetailRow(
-                'Velocidade Aplicada',
-                '${widget.speed.toStringAsFixed(1)} km/h',
-                icon: Icons.speed_rounded,
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildDetailRow(
+                      'Espaçamento',
+                      '${widget.tip.spacing.toStringAsFixed(0)} cm',
+                      icon: Icons.straighten_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildDetailRow(
+                      'Tamanho da Gota',
+                      dropletSize,
+                      icon: Icons.opacity_rounded,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -439,9 +479,158 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
     );
   }
 
+  Widget _buildContactModesSection() {
+    final modoAcao = widget.tip.modoAcao;
+
+    if (modoAcao == null || modoAcao.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.touch_app_rounded, color: primaryColor, size: 20),
+              const SizedBox(width: 8),
+              const Text(
+                'Modo de Ação',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF15325A),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.eco_rounded, color: primaryColor, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    modoAcao,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Este modo de ação define como o produto interage com a planta.',
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade600,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductTypesSection() {
+    final aplicacao = widget.tip.aplicacao;
+
+    if (aplicacao == null || aplicacao.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.science_rounded, color: primaryColor, size: 20),
+              const SizedBox(width: 8),
+              const Text(
+                'Tipo de Aplicação',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF15325A),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.green.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.green.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.check_circle_rounded, color: Colors.green, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    aplicacao,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.green.shade800,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCalculationInfo() {
-    final flowRatePerHectare =
-        (widget.tip.flowRate * 600) / (widget.tip.spacing / 100 * widget.speed);
+    double flowRatePerHectare = 0.0;
+    final denominator = (widget.tip.spacing / 100) * widget.speed;
+
+    if (denominator != 0) {
+      flowRatePerHectare = (widget.tip.flowRate * 600) / denominator;
+    }
 
     return Container(
       margin: const EdgeInsets.only(top: 16),
@@ -498,7 +687,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Com ${widget.speed.toStringAsFixed(1)} km/h e ${widget.tip.spacing.toStringAsFixed(1)} cm de espaçamento',
+                  'Com ${widget.speed.toStringAsFixed(1)} km/h e ${widget.tip.spacing.toStringAsFixed(0)} cm de espaçamento',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -509,7 +698,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Fórmula: Vazão (L/ha) = (Vazão × 600) ÷ (Espaçamento × Velocidade)',
+            'Fórmula: Vazão (L/ha) = (Vazão (L/min) × 600) ÷ (Espaçamento (m) × Velocidade (km/h))',
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey,
@@ -555,7 +744,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
               color: primaryColor,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Column(
             children: tips
                 .map(
@@ -596,21 +785,26 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
   }
 
   Future<void> _shareTipDetails() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Funcionalidade de compartilhamento em desenvolvimento'),
-        backgroundColor: Colors.blue,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Funcionalidade de compartilhamento em desenvolvimento'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    }
   }
 
   void _compareTips() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Funcionalidade de comparação em desenvolvimento'),
-        backgroundColor: Colors.blue,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Funcionalidade de comparação em desenvolvimento'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    }
   }
 
   @override
@@ -667,7 +861,6 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
         },
         onTipsTap: () {
           Navigator.pop(context);
-
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const TipSelectionPage()),
@@ -676,7 +869,6 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
         },
         onFavoritesTap: () {
           Navigator.pop(context);
-
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
@@ -771,6 +963,8 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
                 const SizedBox(height: 20),
                 _buildPressureWarning(),
                 _buildSpecificationsSection(),
+                _buildContactModesSection(),
+                _buildProductTypesSection(),
                 _buildCalculationInfo(),
                 _buildApplicationTips(),
                 const SizedBox(height: 20),

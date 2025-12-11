@@ -8,6 +8,8 @@ class TipModel {
   final double speed;
   final String? imageUrl;
   final int? dropletSizeId;
+  final String? modoAcao;
+  final String? aplicacao;
 
   TipModel({
     required this.id,
@@ -19,19 +21,40 @@ class TipModel {
     required this.speed,
     this.imageUrl,
     this.dropletSizeId,
+    this.modoAcao,
+    this.aplicacao,
   });
 
   factory TipModel.fromJson(Map<String, dynamic> json) {
+    dynamic extractNested(
+        Map<String, dynamic> json, String key, String nestedKey) {
+      final parent = json[key];
+      if (parent is Map<String, dynamic>) {
+        return parent[nestedKey];
+      }
+      return null;
+    }
+
+    dynamic extractInconsistent(Map<String, dynamic> json, String key) {
+      final value = json[key];
+      if (value is Map<String, dynamic>) {
+        return value[key];
+      }
+      return value;
+    }
+
     return TipModel(
       id: _safeParseInt(json['id']),
-      name: _safeParseString(json['pontas']?['ponta']),
-      model: _safeParseString(json['modelo']?['modelo']),
-      pressure: _safeParseDouble(json['pressao']?['bar']),
-      flowRate: _safeParseDouble(json['vazao']?['litros']),
-      spacing: _safeParseDouble(json['espacamento']?['cm']),
-      speed: _safeParseDouble(json['velocidade']?['km_h']),
+      name: _safeParseString(extractNested(json, 'pontas', 'ponta')),
+      model: _safeParseString(extractNested(json, 'modelo', 'modelo')),
+      pressure: _safeParseDouble(extractNested(json, 'pressao', 'bar')),
+      flowRate: _safeParseDouble(extractNested(json, 'vazao', 'litros')),
+      spacing: _safeParseDouble(extractNested(json, 'espacamento', 'cm')),
+      speed: _safeParseDouble(extractNested(json, 'velocidade', 'km_h')),
       imageUrl: _safeParseString(json['image_url']),
       dropletSizeId: _safeParseInt(json['tamanho_gota_id']),
+      modoAcao: _safeParseString(extractInconsistent(json, 'modo_acao')),
+      aplicacao: _safeParseString(extractInconsistent(json, 'aplicacao')),
     );
   }
 

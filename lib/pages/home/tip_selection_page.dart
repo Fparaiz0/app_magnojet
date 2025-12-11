@@ -8,6 +8,7 @@ import 'favorites_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/custom_drawer.dart';
 import '../auth/login_page.dart';
+import 'settings_page.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});
@@ -1195,6 +1196,13 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
+          );
+        },
+        onSettingsTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
           );
         },
         onLogoutTap: () => _showLogoutDialog(context),

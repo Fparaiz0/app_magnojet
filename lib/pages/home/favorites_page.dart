@@ -6,6 +6,7 @@ import '../auth/login_page.dart';
 import 'home_page.dart';
 import 'tip_details_page.dart';
 import 'tip_selection_page.dart';
+import 'settings_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -929,6 +930,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
               (route) => false,
             );
           }
+        },
+        onSettingsTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
         },
         onLogoutTap: () => _showLogoutDialog(context),
       ),

@@ -6,6 +6,7 @@ import 'favorites_page.dart';
 import '../auth/login_page.dart';
 import 'home_page.dart';
 import 'tip_selection_page.dart';
+import 'settings_page.dart';
 
 class TipDetailsPage extends StatefulWidget {
   final TipModel tip;
@@ -893,6 +894,13 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
             (route) => false,
+          );
+        },
+        onSettingsTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
           );
         },
         onLogoutTap: () => _showLogoutDialog(context),

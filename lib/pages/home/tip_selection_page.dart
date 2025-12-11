@@ -847,11 +847,11 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                           runSpacing: 4,
                           children: [
                             _buildInfoChip(
-                              '${tip.flowRate.toStringAsFixed(2)} L/min',
+                              '${tip.flowRate} L/min',
                               Icons.speed_rounded,
                             ),
                             _buildInfoChip(
-                              '${tip.pressure.toStringAsFixed(1)} bar',
+                              '${tip.pressure} bar',
                               Icons.compress_rounded,
                             ),
                             _buildInfoChip(

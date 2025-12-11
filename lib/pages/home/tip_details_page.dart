@@ -438,7 +438,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
                   Expanded(
                     child: _buildDetailRow(
                       'Pressão',
-                      '${widget.tip.pressure.toStringAsFixed(1)} bar',
+                      '${widget.tip.pressure} bar',
                       icon: Icons.speed_rounded,
                     ),
                   ),
@@ -446,7 +446,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
                   Expanded(
                     child: _buildDetailRow(
                       'Vazão',
-                      '${widget.tip.flowRate.toStringAsFixed(1)} L/min',
+                      '${widget.tip.flowRate} L/min',
                       icon: Icons.water_drop_rounded,
                     ),
                   ),
@@ -468,6 +468,26 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
                       'Tamanho da Gota',
                       dropletSize,
                       icon: Icons.opacity_rounded,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildDetailRow(
+                      'Tecnologia',
+                      widget.hasPWM ? 'PWM' : 'Sem PWM',
+                      icon: Icons.flash_on_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildDetailRow(
+                      'Velocidade',
+                      '${widget.speed} km/h',
+                      icon: Icons.directions_car_rounded,
                     ),
                   ),
                 ],
@@ -687,7 +707,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Com ${widget.speed.toStringAsFixed(1)} km/h e ${widget.tip.spacing.toStringAsFixed(0)} cm de espaçamento',
+                  'Com ${widget.speed} km/h e ${widget.tip.spacing.toStringAsFixed(0)} cm de espaçamento',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,

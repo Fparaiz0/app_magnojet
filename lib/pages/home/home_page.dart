@@ -237,18 +237,10 @@ class _HomePageState extends State<HomePage> {
           children: [
             Image.asset(
               'assets/logo_branca.png',
-              height: 28,
-              width: 70,
+              height: 40,
+              width: 80,
             ),
             const SizedBox(width: 8),
-            const Text(
-              'Home',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
           ],
         ),
         centerTitle: true,

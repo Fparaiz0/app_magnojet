@@ -34,6 +34,7 @@ class CustomDrawer extends StatelessWidget {
     final user = Supabase.instance.client.auth.currentUser;
     String displayUserName = userName.isNotEmpty ? userName : 'Usuário';
     String displayInitial = userName.isNotEmpty ? userName[0] : 'U';
+    final int currentYear = DateTime.now().year;
 
     return Drawer(
       width: 280,
@@ -268,8 +269,8 @@ class CustomDrawer extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      '© 2024 Todos os direitos reservados',
+                    Text(
+                      '© $currentYear Todos os direitos reservados',
                       style: TextStyle(
                         color: Colors.white30,
                         fontSize: 10,

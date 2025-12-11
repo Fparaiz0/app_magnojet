@@ -514,7 +514,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  'Toque no ícone de coração em qualquer ponta para adicioná-la aos seus favoritos',
+                  'Toque no ícone de favorito em qualquer ponta para adicioná-la aos seus favoritos',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey.shade600,
@@ -526,6 +526,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TipSelectionPage()),
+                    (route) => false,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,

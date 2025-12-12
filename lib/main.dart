@@ -52,107 +52,140 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const InternetCheckWrapper(),
+      home: const MainApp(),
     );
   }
 }
 
-class InternetCheckWrapper extends StatefulWidget {
-  const InternetCheckWrapper({super.key});
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
   @override
-  State<InternetCheckWrapper> createState() => _InternetCheckWrapperState();
+  State<MainApp> createState() => _MainAppState();
 }
 
-class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
-  bool _hasInternet = true;
+class _MainAppState extends State<MainApp> {
+  final Connectivity _connectivity = Connectivity();
+  bool _hasInternet = false;
+  bool _initialized = false;
+  StreamSubscription? _subscription;
 
   @override
   void initState() {
     super.initState();
-    _checkInternetConnection();
-    _setupConnectivityListener();
+    _initConnectivity();
   }
 
-  Future<void> _checkInternetConnection() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    final hasInternet = connectivityResult.isNotEmpty &&
-        connectivityResult.any((result) => result != ConnectivityResult.none);
-
-    if (mounted) {
-      setState(() {
-        _hasInternet = hasInternet;
-      });
-    }
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 
-  void _setupConnectivityListener() {
-    Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> results) {
-      final hasInternet = results.isNotEmpty &&
-          results.any((result) => result != ConnectivityResult.none);
+  Future<void> _initConnectivity() async {
+    try {
+      var connectivityResult = await _connectivity.checkConnectivity();
+      _updateConnectionStatus(connectivityResult);
 
+      _subscription = _connectivity.onConnectivityChanged.listen(
+        _updateConnectionStatus,
+      );
+    } catch (_) {}
+  }
+
+  void _updateConnectionStatus(List<ConnectivityResult> result) {
+    final bool isConnected = result.isNotEmpty &&
+        result.any((element) => element != ConnectivityResult.none);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
-          _hasInternet = hasInternet;
+          _hasInternet = isConnected;
+          _initialized = true;
         });
       }
     });
   }
 
+  Future<void> _checkConnection() async {
+    try {
+      var connectivityResult = await _connectivity.checkConnectivity();
+      _updateConnectionStatus(connectivityResult);
+    } catch (_) {}
+  }
+
+  Widget _buildNoInternetScreen() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.wifi_off_rounded,
+                size: 80,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Sem conexão com a internet',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Este aplicativo requer conexão com a internet para funcionar.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _checkConnection,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 12,
+                  ),
+                ),
+                child: const Text('Tentar novamente'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (!_hasInternet) {
-      return Scaffold(
+    if (!_initialized) {
+      return const Scaffold(
         backgroundColor: Colors.white,
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.wifi_off_rounded,
-                  size: 80,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Sem conexão com a internet',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Este aplicativo requer conexão com a internet para funcionar.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _checkInternetConnection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
-                    ),
-                  ),
-                  child: const Text('Tentar novamente'),
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 20),
+              Text('Verificando conexão...'),
+            ],
           ),
         ),
       );
+    }
+
+    if (!_hasInternet) {
+      return _buildNoInternetScreen();
     }
 
     return const AuthGate();
@@ -186,42 +219,25 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _checkAuthState() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    final hasInternet = connectivityResult.isNotEmpty &&
-        connectivityResult.any((result) => result != ConnectivityResult.none);
-
-    if (!hasInternet && mounted) {
-      _showSnackBar('Verifique sua conexão com a internet');
-      setState(() => _isLoading = false);
-      return;
-    }
-
     final currentSession = supabase.auth.currentSession;
+
+    setState(() {
+      _session = currentSession;
+      _isLoading = false;
+    });
+
     if (currentSession != null) {
-      if (mounted) {
-        setState(() {
-          _session = currentSession;
-          _isLoading = false;
-        });
-      }
       await _saveUserLocationOnLogin();
-    } else {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
     }
 
     _authSubscription = supabase.auth.onAuthStateChange.listen((data) async {
       final session = data.session;
 
-      if (mounted) {
-        setState(() {
-          _session = session;
-          _isLoading = false;
-        });
-      }
+      setState(() {
+        _session = session;
+      });
 
-      if (session != null && !_locationRequested && mounted) {
+      if (session != null && !_locationRequested) {
         await _saveUserLocationOnLogin();
       }
     });
@@ -229,11 +245,9 @@ class _AuthGateState extends State<AuthGate> {
 
   Future<void> _saveUserLocationOnLogin() async {
     try {
-      if (mounted) {
-        setState(() {
-          _locationRequested = true;
-        });
-      }
+      setState(() {
+        _locationRequested = true;
+      });
 
       final user = supabase.auth.currentUser;
       if (user == null) return;
@@ -250,9 +264,7 @@ class _AuthGateState extends State<AuthGate> {
 
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        if (mounted) {
-          _showLocationServiceDisabledAlert();
-        }
+        _showLocationServiceDisabledAlert();
         await _saveDefaultLocation(user.id);
         return;
       }
@@ -351,44 +363,29 @@ class _AuthGateState extends State<AuthGate> {
 
   void _showLocationServiceDisabledAlert() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Localização Desabilitada'),
-            content: const Text(
-              'O serviço de localização está desabilitado. '
-              'Você pode habilitá-lo nas configurações do dispositivo.',
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Localização Desabilitada'),
+          content: const Text(
+            'O serviço de localização está desabilitado. '
+            'Você pode habilitá-lo nas configurações do dispositivo.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Geolocator.openLocationSettings();
-                  Navigator.pop(context);
-                },
-                child: const Text('Abrir Configurações'),
-              ),
-            ],
-          ),
-        );
-      }
-    });
-  }
-
-  void _showSnackBar(String message) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+            TextButton(
+              onPressed: () {
+                Geolocator.openLocationSettings();
+                Navigator.pop(context);
+              },
+              child: const Text('Abrir Configurações'),
+            ),
+          ],
+        ),
+      );
     });
   }
 
@@ -400,78 +397,6 @@ class _AuthGateState extends State<AuthGate> {
       );
     }
 
-    if (_session != null) {
-      return StreamBuilder<List<ConnectivityResult>>(
-        stream: Connectivity().onConnectivityChanged,
-        builder: (context, snapshot) {
-          final results = snapshot.data ?? [];
-          final hasConnection = results.isNotEmpty &&
-              results.any((result) => result != ConnectivityResult.none);
-
-          if (!hasConnection) {
-            return Scaffold(
-              backgroundColor: Colors.white,
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.wifi_off_rounded,
-                        size: 80,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Conexão perdida',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'O aplicativo requer conexão com a internet para continuar funcionando.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AuthGate(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: const Text('Recarregar'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-          return const HomePage();
-        },
-      );
-    }
-
-    return const LoginPage();
+    return _session != null ? const HomePage() : const LoginPage();
   }
 }

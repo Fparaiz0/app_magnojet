@@ -7,6 +7,7 @@ import 'home_page.dart';
 import 'favorites_page.dart';
 import 'tip_selection_page.dart';
 import 'profile_page.dart';
+import 'history_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -588,6 +589,13 @@ class _SettingsPageState extends State<SettingsPage> {
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
             (route) => false,
+          );
+        },
+        onHistoryTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HistoryPage()),
           );
         },
         onSettingsTap: () {

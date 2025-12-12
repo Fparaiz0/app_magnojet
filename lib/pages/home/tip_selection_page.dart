@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../models/tip_selection_model.dart';
 import '../../../services/tip_selection_service.dart';
+import '../../../services/search_history_service.dart';
 import 'home_page.dart';
 import 'tip_details_page.dart';
 import 'favorites_page.dart';
@@ -10,6 +11,7 @@ import '../../widgets/custom_drawer.dart';
 import '../auth/login_page.dart';
 import 'settings_page.dart';
 import 'profile_page.dart';
+import 'history_page.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});
@@ -20,6 +22,7 @@ class TipSelectionPage extends StatefulWidget {
 
 class _TipSelectionPageState extends State<TipSelectionPage> {
   final TipService _tipService = TipService();
+  final SearchHistoryService _historyService = SearchHistoryService();
   final supabase = Supabase.instance.client;
 
   final _formKey = GlobalKey<FormState>();
@@ -258,6 +261,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         _showResults = true;
       });
 
+      await _saveSearchToHistory(results);
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent + 50,
@@ -278,6 +283,37 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         ),
       );
     }
+  }
+
+  Future<void> _saveSearchToHistory(List<TipModel> results) async {
+    try {
+      final parameters = {
+        'application_type': _selectedApplicationType,
+        'application': _selectedApplication,
+        'action_mode': _selectedActionMode,
+        'pwm': _hasPWM,
+        'pressure': _pressure.toStringAsFixed(1),
+        'flow_rate_per_hectare': _flowRatePerHectare.toInt().toString(),
+        'flow_rate': _flowRate.toStringAsFixed(2),
+        'spacing': _spacing.toStringAsFixed(1),
+        'speed': _speed.toStringAsFixed(1),
+      };
+
+      final parametersJson =
+          parameters.entries.map((e) => '${e.key}: ${e.value}').join(', ');
+
+      final resultsJson = results
+          .map((tip) =>
+              '${tip.id}|${tip.name}|${tip.model}|${tip.flowRate}|${tip.pressure}|'
+              '${tip.spacing}|${tip.dropletSizeId ?? 0}|${tip.imageUrl ?? ""}')
+          .join(';');
+
+      await _historyService.saveSearchHistory(
+        parametersJson: parametersJson,
+        resultsJson: resultsJson,
+        resultCount: results.length,
+      );
+    } catch (_) {}
   }
 
   void _preloadImages(List<TipModel> tips) {
@@ -1132,6 +1168,16 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         elevation: 0,
         actions: [
           IconButton(
+            icon: const Icon(Icons.history_rounded),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryPage()),
+              );
+            },
+            tooltip: 'Ver histórico',
+          ),
+          IconButton(
             icon: const Icon(Icons.help_outline_rounded),
             onPressed: () {
               showDialog(
@@ -1154,7 +1200,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                         ),
                         const SizedBox(height: 16),
                         const Text(
-                          'Configure todos os parâmetros para encontrar as pontas mais adequadas para sua aplicação.',
+                          'Configure todos os parâmetros para encontrar as pontas mais adequadas para sua aplicação. As buscas serão salvas automaticamente no histórico.',
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
@@ -1207,6 +1253,13 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
+          );
+        },
+        onHistoryTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HistoryPage()),
           );
         },
         onSettingsTap: () {
@@ -1612,105 +1665,104 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.filter_alt_rounded, color: primaryColor, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                'Filtrar por Tamanho de Gota',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: primaryColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _availableDropletSizes.map((sizeId) {
-              final isSelected = _selectedDropletSizes.contains(sizeId);
-              final sizeName = _dropletSizeMap[sizeId] ?? 'N/A';
-
-              final isOnlyOneSelected =
-                  _selectedDropletSizes.length == 1 && isSelected;
-
-              return ChoiceChip(
-                label: Text(sizeName),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    if (selected) {
-                      _selectedDropletSizes.add(sizeId);
-                    } else {
-                      if (!isOnlyOneSelected) {
-                        _selectedDropletSizes.remove(sizeId);
-                      }
-                    }
-                  });
-                },
-                selectedColor: primaryColor,
-                labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : primaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 13,
-                ),
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(
-                    color: isSelected ? primaryColor : Colors.grey.shade300,
-                    width: 1,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.filter_alt_rounded, color: primaryColor, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Filtrar por Tamanho de Gota',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: primaryColor,
                   ),
                 ),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedDropletSizes = _availableDropletSizes.toSet();
-                  });
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: primaryColor,
-                ),
-                child: const Text('Selecionar Todos'),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: _selectedDropletSizes.length > 1
-                    ? () {
-                        final firstSize = _selectedDropletSizes.first;
-                        setState(() {
-                          _selectedDropletSizes = {firstSize};
-                        });
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _availableDropletSizes.map((sizeId) {
+                final isSelected = _selectedDropletSizes.contains(sizeId);
+                final sizeName = _dropletSizeMap[sizeId] ?? 'N/A';
+
+                final isOnlyOneSelected =
+                    _selectedDropletSizes.length == 1 && isSelected;
+
+                return ChoiceChip(
+                  label: Text(sizeName),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    setState(() {
+                      if (selected) {
+                        _selectedDropletSizes.add(sizeId);
+                      } else {
+                        if (!isOnlyOneSelected) {
+                          _selectedDropletSizes.remove(sizeId);
+                        }
                       }
-                    : null,
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.red,
+                    });
+                  },
+                  selectedColor: primaryColor,
+                  labelStyle: TextStyle(
+                    color: isSelected ? Colors.white : primaryColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                  ),
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: isSelected ? primaryColor : Colors.grey.shade300,
+                      width: 1,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedDropletSizes = _availableDropletSizes.toSet();
+                    });
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: primaryColor,
+                  ),
+                  child: const Text('Selecionar Todos'),
                 ),
-                child: const Text('Limpar'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+                const Spacer(),
+                TextButton(
+                  onPressed: _selectedDropletSizes.length > 1
+                      ? () {
+                          final firstSize = _selectedDropletSizes.first;
+                          setState(() {
+                            _selectedDropletSizes = {firstSize};
+                          });
+                        }
+                      : null,
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                  child: const Text('Limpar'),
+                ),
+              ],
+            ),
+          ],
+        ));
   }
 
   void _showLogoutDialog(BuildContext context) {

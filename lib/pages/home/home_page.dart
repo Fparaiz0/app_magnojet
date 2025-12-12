@@ -5,6 +5,7 @@ import 'tip_selection_page.dart';
 import '../../widgets/custom_drawer.dart';
 import 'favorites_page.dart';
 import 'settings_page.dart';
+import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final supabase = Supabase.instance.client;
   String _userName = '';
+  String? _userAvatarUrl;
   bool _isLoading = true;
 
   static const primaryColor = Color(0xFF15325A);
@@ -38,13 +40,14 @@ class _HomePageState extends State<HomePage> {
     try {
       final response = await supabase
           .from('users')
-          .select('name')
+          .select('name, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
 
       if (mounted) {
         setState(() {
-          _userName = (response?['name'] ?? 'Usuário').split(' ').first;
+          _userName = (response?['name'] ?? 'Usuário');
+          _userAvatarUrl = response?['avatar_url'];
           _isLoading = false;
         });
       }
@@ -257,6 +260,7 @@ class _HomePageState extends State<HomePage> {
       drawer: CustomDrawer(
         currentRoute: '/home',
         userName: _userName,
+        userAvatarUrl: _userAvatarUrl,
         isLoadingUser: _isLoading,
         onHomeTap: () {
           Navigator.pop(context);
@@ -264,6 +268,13 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
             (route) => false,
+          );
+        },
+        onProfileTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()),
           );
         },
         onTipsTap: () {
@@ -287,7 +298,10 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(builder: (context) => const SettingsPage()),
           );
         },
-        onLogoutTap: () => _showLogoutDialog,
+        onLogoutTap: () {
+          Navigator.pop(context);
+          _showLogoutDialog();
+        },
       ),
       body: _isLoading
           ? _buildLoadingState()
@@ -322,12 +336,20 @@ class _HomePageState extends State<HomePage> {
                                 decoration: BoxDecoration(
                                   color: primaryColor.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
+                                  image: _userAvatarUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(_userAvatarUrl!),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
                                 ),
-                                child: const Icon(
-                                  Icons.person_rounded,
-                                  color: primaryColor,
-                                  size: 22,
-                                ),
+                                child: _userAvatarUrl == null
+                                    ? Icon(
+                                        Icons.person_rounded,
+                                        color: primaryColor,
+                                        size: 22,
+                                      )
+                                    : null,
                               ),
                               const SizedBox(width: 16),
                               Expanded(

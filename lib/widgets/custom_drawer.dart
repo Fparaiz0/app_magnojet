@@ -4,8 +4,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class CustomDrawer extends StatelessWidget {
   final String currentRoute;
   final String userName;
+  final String? userAvatarUrl;
   final bool isLoadingUser;
   final VoidCallback? onHomeTap;
+  final VoidCallback? onProfileTap;
   final VoidCallback? onTipsTap;
   final VoidCallback? onCalculationsTap;
   final VoidCallback? onCatalogTap;
@@ -18,8 +20,10 @@ class CustomDrawer extends StatelessWidget {
     super.key,
     required this.currentRoute,
     required this.userName,
+    this.userAvatarUrl,
     required this.isLoadingUser,
     this.onHomeTap,
+    this.onProfileTap,
     this.onTipsTap,
     this.onCalculationsTap,
     this.onCatalogTap,
@@ -33,7 +37,6 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
     String displayUserName = userName.isNotEmpty ? userName : 'Usuário';
-    String displayInitial = userName.isNotEmpty ? userName[0] : 'U';
     final int currentYear = DateTime.now().year;
 
     return Drawer(
@@ -85,17 +88,27 @@ class CustomDrawer extends StatelessWidget {
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
+                                  image: userAvatarUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(userAvatarUrl!),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    displayInitial.toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF15325A),
-                                    ),
-                                  ),
-                                ),
+                                child: userAvatarUrl == null
+                                    ? Center(
+                                        child: Text(
+                                          displayUserName.isNotEmpty
+                                              ? displayUserName[0].toUpperCase()
+                                              : 'U',
+                                          style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF15325A),
+                                          ),
+                                        ),
+                                      )
+                                    : null,
                               ),
                               const SizedBox(width: 16),
                               Expanded(
@@ -167,6 +180,13 @@ class CustomDrawer extends StatelessWidget {
                       title: 'Início',
                       isSelected: currentRoute == '/home',
                       onTap: onHomeTap,
+                    ),
+                    _buildDrawerItem(
+                      context: context,
+                      icon: Icons.person_rounded,
+                      title: 'Meu Perfil',
+                      isSelected: currentRoute == '/profile',
+                      onTap: onProfileTap,
                     ),
                     _buildDrawerItem(
                       context: context,

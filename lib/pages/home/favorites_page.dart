@@ -7,6 +7,7 @@ import 'home_page.dart';
 import 'tip_details_page.dart';
 import 'tip_selection_page.dart';
 import 'settings_page.dart';
+import 'profile_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -18,6 +19,7 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   final supabase = Supabase.instance.client;
   String _userName = '';
+  String? _userAvatarUrl;
   bool _isLoadingUser = true;
   bool _isLoadingFavorites = true;
   List<TipModel> _favoriteTips = [];
@@ -68,14 +70,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
     try {
       final response = await supabase
           .from('users')
-          .select('name')
+          .select('name, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
 
       if (!mounted) return;
 
       setState(() {
-        _userName = (response?['name'] ?? 'Usuário').split(' ').first;
+        _userName = (response?['name'] ?? 'Usuário');
+        _userAvatarUrl = (response?['avatar_url']);
         _isLoadingUser = false;
       });
     } catch (e) {
@@ -904,6 +907,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       drawer: CustomDrawer(
         currentRoute: '/favorites',
         userName: _userName,
+        userAvatarUrl: _userAvatarUrl,
         isLoadingUser: _isLoadingUser,
         onHomeTap: () {
           Navigator.pop(context);
@@ -911,6 +915,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
             (route) => false,
+          );
+        },
+        onProfileTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()),
           );
         },
         onTipsTap: () {

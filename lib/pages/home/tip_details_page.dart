@@ -29,6 +29,7 @@ class TipDetailsPage extends StatefulWidget {
 class _TipDetailsPageState extends State<TipDetailsPage> {
   late final SupabaseClient supabase;
   String _userName = '';
+  String? _userAvatarUrl;
   bool _isLoadingUser = true;
   bool _isFavorite = false;
   bool _isLoadingFavorite = true;
@@ -61,13 +62,14 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
     try {
       final response = await supabase
           .from('users')
-          .select('name')
+          .select('name, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
 
       if (mounted) {
         setState(() {
-          _userName = (response?['name'] ?? 'Usuário').split(' ').first;
+          _userName = (response?['name'] ?? 'Usuário');
+          _userAvatarUrl = (response?['avatar_url']);
           _isLoadingUser = false;
         });
       }
@@ -871,6 +873,7 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
       drawer: CustomDrawer(
         currentRoute: '/tip-details',
         userName: _userName,
+        userAvatarUrl: _userAvatarUrl,
         isLoadingUser: _isLoadingUser,
         onHomeTap: () {
           Navigator.pop(context);

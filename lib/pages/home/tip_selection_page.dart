@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/custom_drawer.dart';
 import '../auth/login_page.dart';
 import 'settings_page.dart';
+import 'profile_page.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});
@@ -39,6 +40,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   List<int> _availableDropletSizes = [];
 
   String _userName = '';
+  String? _userAvatarUrl;
   bool _isLoadingUser = true;
   double _pressure = 3.0;
   double _flowRatePerHectare = 100.0;
@@ -173,13 +175,14 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     try {
       final response = await supabase
           .from('users')
-          .select('name')
+          .select('name, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
 
       if (mounted) {
         setState(() {
-          _userName = (response?['name'] ?? 'Usuário').split(' ').first;
+          _userName = (response?['name'] ?? 'Usuário');
+          _userAvatarUrl = (response?['avatar_url']);
           _isLoadingUser = false;
         });
       }
@@ -1179,6 +1182,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       drawer: CustomDrawer(
         currentRoute: '/tips',
         userName: _userName,
+        userAvatarUrl: _userAvatarUrl,
         isLoadingUser: _isLoadingUser,
         onHomeTap: () {
           Navigator.pop(context);
@@ -1186,6 +1190,13 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
             (route) => false,
+          );
+        },
+        onProfileTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()),
           );
         },
         onTipsTap: () {

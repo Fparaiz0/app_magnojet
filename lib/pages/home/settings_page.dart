@@ -6,6 +6,7 @@ import '../auth/login_page.dart';
 import 'home_page.dart';
 import 'favorites_page.dart';
 import 'tip_selection_page.dart';
+import 'profile_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -18,6 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final supabase = Supabase.instance.client;
   String _userName = '';
   String _userEmail = '';
+  String? _userAvatarUrl;
   bool _isLoadingUser = true;
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
@@ -65,7 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       final response = await supabase
           .from('users')
-          .select('name, email')
+          .select('name, email, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -73,6 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {
           _userName = response?['name'] ?? 'Usuário';
           _userEmail = response?['email'] ?? user.email ?? 'Não informado';
+          _userAvatarUrl = response?['avatar_url'];
           _isLoadingUser = false;
         });
       }
@@ -206,12 +209,20 @@ class _SettingsPageState extends State<SettingsPage> {
             decoration: BoxDecoration(
               color: primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(30),
+              image: _userAvatarUrl != null
+                  ? DecorationImage(
+                      image: NetworkImage(_userAvatarUrl!),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
-            child: Icon(
-              Icons.person_rounded,
-              size: 30,
-              color: primaryColor,
-            ),
+            child: _userAvatarUrl == null
+                ? Icon(
+                    Icons.person_rounded,
+                    size: 30,
+                    color: primaryColor,
+                  )
+                : null,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -518,12 +529,20 @@ class _SettingsPageState extends State<SettingsPage> {
         currentRoute: '/settings',
         userName: _userName,
         isLoadingUser: _isLoadingUser,
+        userAvatarUrl: _userAvatarUrl,
         onHomeTap: () {
           Navigator.pop(context);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
             (route) => false,
+          );
+        },
+        onProfileTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()),
           );
         },
         onTipsTap: () {

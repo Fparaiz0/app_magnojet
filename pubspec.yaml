@@ -1,65 +1,70 @@
 name: magnojet
-description: "A new Flutter project."
+description: Aplicativo MagnoJet para seleção de pontas de pulverização agrícola.
 
-# A linha 'publish_to: none' impede a publicação acidental no pub.dev.
 publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  # Faixa de versões do SDK do Dart compatível com as versões atuais do Flutter.
   sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+
+  # UI e Design
   material_design_icons_flutter: ^7.0.7296
+  cupertino_icons: ^1.0.8
+
+  # Utilitários
   path: ^1.9.1
   logger: ^2.3.0
   intl: ^0.20.2
   shared_preferences: ^2.2.2
 
-  # Ícones padrão do iOS.
-  cupertino_icons: ^1.0.8
-
-  # Dependências para o banco de dados local e sistema de arquivos.
+  # Armazenamento Local
   sqflite: ^2.3.3
   path_provider: ^2.1.3
 
-  # Dependências para conectividade e programação reativa.
+  # Localização e GPS
+  geolocator: ^11.0.0
+  geocoding: ^2.1.0
+
+  # Mídia
+  image_picker: ^1.0.4
+
+  # Conectividade
   connectivity_plus: ^7.0.0
-  rxdart: ^0.28.0
+
+  # Backend e Autenticação
   supabase_flutter: ^2.10.3
+
+  # Variáveis de Ambiente
   flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # A dependência do pacote de ícones.
+  # Geração de Ícones
   flutter_launcher_icons: ^0.14.4
 
-  # Linter para análise de código.
+  # Qualidade de Código
   flutter_lints: ^6.0.0
 
 flutter_launcher_icons:
-  # Ícone padrão para a maioria dos sistemas (iOS, Android < 13).
   image_path: "assets/icon_normal.png"
   ios: true
   android: true
-
-  # Define o fundo como a cor sólida azul escuro
   adaptive_icon_background: "#15325a"
-  # Define o logo como a imagem de primeiro plano
   adaptive_icon_foreground: "assets/icon_normal.png"
 
 flutter:
   uses-material-design: true
 
-  # Declaração dos assets para que o Flutter possa encontrá-los.
   assets:
+    - .env
     - assets/logo.png
     - assets/icon_normal.png
     - assets/icon_monochromatic.png
     - assets/logo_branca.png
-    - .env

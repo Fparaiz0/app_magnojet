@@ -26,6 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   late final supabase = Supabase.instance.client;
   final _formKey = GlobalKey<FormState>();
+  final _passwordFormKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
 
   String _userName = '';
@@ -37,10 +38,22 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isEditing = false;
   bool _isLoadingLocation = false;
   bool _isUploadingImage = false;
+  bool _showPasswordSection = false;
+  bool _isChangingPassword = false;
+
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+
+  bool _showCurrentPassword = false;
+  bool _showNewPassword = false;
+  bool _showConfirmPassword = false;
 
   @override
   void initState() {
@@ -55,6 +68,9 @@ class _ProfilePageState extends State<ProfilePage> {
     _nameController.dispose();
     _emailController.dispose();
     _locationController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -353,6 +369,64 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _changePassword() async {
+    if (!_passwordFormKey.currentState!.validate()) return;
+
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    setState(() => _isChangingPassword = true);
+
+    try {
+      final currentPassword = _currentPasswordController.text.trim();
+      final newPassword = _newPasswordController.text.trim();
+
+      try {
+        await supabase.auth.signInWithPassword(
+          email: _userEmail,
+          password: currentPassword,
+        );
+      } catch (e) {
+        if (e.toString().contains('Invalid login credentials')) {
+          throw Exception('Senha atual incorreta');
+        }
+        rethrow;
+      }
+
+      await supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+      if (!mounted) return;
+
+      _currentPasswordController.clear();
+      _newPasswordController.clear();
+      _confirmPasswordController.clear();
+
+      setState(() {
+        _showPasswordSection = false;
+        _isChangingPassword = false;
+      });
+
+      _showSuccessSnackBar('Senha alterada com sucesso!');
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _isChangingPassword = false);
+
+      String errorMessage = 'Erro ao alterar senha';
+      if (e.toString().contains('Senha atual incorreta')) {
+        errorMessage = 'Senha atual incorreta';
+      } else if (e.toString().contains('Password should')) {
+        errorMessage = 'A nova senha não atende aos requisitos de segurança';
+      } else if (e.toString().contains('weak_password')) {
+        errorMessage = 'A nova senha é muito fraca';
+      }
+
+      _showErrorSnackBar(errorMessage);
+    }
+  }
+
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -374,8 +448,21 @@ class _ProfilePageState extends State<ProfilePage> {
   void _toggleEditMode() {
     setState(() {
       _isEditing = !_isEditing;
+      _showPasswordSection = false;
       if (!_isEditing) {
         _updateControllers();
+      }
+    });
+  }
+
+  void _togglePasswordSection() {
+    setState(() {
+      _showPasswordSection = !_showPasswordSection;
+      if (!_showPasswordSection) {
+        _currentPasswordController.clear();
+        _newPasswordController.clear();
+        _confirmPasswordController.clear();
+        _passwordFormKey.currentState?.reset();
       }
     });
   }
@@ -600,6 +687,193 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 16),
           if (_isEditing) _buildEditForm() else _buildInfoDisplay(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordChangeCard() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: _buildCardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSectionHeader(
+                icon: Icons.lock_outline_rounded,
+                title: 'Alterar Senha',
+              ),
+              IconButton(
+                onPressed: _togglePasswordSection,
+                icon: Icon(
+                  _showPasswordSection
+                      ? Icons.expand_less_rounded
+                      : Icons.expand_more_rounded,
+                  color: primaryColor,
+                ),
+                tooltip: _showPasswordSection
+                    ? 'Ocultar alteração de senha'
+                    : 'Mostrar alteração de senha',
+              ),
+            ],
+          ),
+          if (_showPasswordSection) ...[
+            const SizedBox(height: 16),
+            const Text(
+              'Para alterar sua senha, primeiro confirme sua senha atual e depois digite a nova senha.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildPasswordForm(),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordForm() {
+    return Form(
+      key: _passwordFormKey,
+      child: Column(
+        children: [
+          _buildPasswordField(
+            label: 'Senha Atual',
+            controller: _currentPasswordController,
+            showPassword: _showCurrentPassword,
+            onToggleVisibility: () {
+              setState(() => _showCurrentPassword = !_showCurrentPassword);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, informe sua senha atual';
+              }
+              if (value.length < 6) {
+                return 'A senha deve ter pelo menos 6 caracteres';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildPasswordField(
+            label: 'Nova Senha',
+            controller: _newPasswordController,
+            showPassword: _showNewPassword,
+            onToggleVisibility: () {
+              setState(() => _showNewPassword = !_showNewPassword);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, informe a nova senha';
+              }
+              if (value.length < 6) {
+                return 'A senha deve ter pelo menos 6 caracteres';
+              }
+              if (value == _currentPasswordController.text) {
+                return 'A nova senha deve ser diferente da atual';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildPasswordField(
+            label: 'Confirmar Nova Senha',
+            controller: _confirmPasswordController,
+            showPassword: _showConfirmPassword,
+            onToggleVisibility: () {
+              setState(() => _showConfirmPassword = !_showConfirmPassword);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, confirme a nova senha';
+              }
+              if (value != _newPasswordController.text) {
+                return 'As senhas não coincidem';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 20),
+          _buildPasswordButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required String label,
+    required TextEditingController controller,
+    required bool showPassword,
+    required VoidCallback onToggleVisibility,
+    required String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: !showPassword,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: const Icon(Icons.lock_rounded, color: primaryColor),
+        suffixIcon: IconButton(
+          icon: Icon(
+            showPassword
+                ? Icons.visibility_rounded
+                : Icons.visibility_off_rounded,
+            color: primaryColor.withValues(alpha: 0.7),
+          ),
+          onPressed: onToggleVisibility,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: const Color.fromARGB(255, 0, 64, 255), width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+      ),
+      style: const TextStyle(fontSize: 15),
+      validator: validator,
+    );
+  }
+
+  Widget _buildPasswordButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _isChangingPassword ? null : _changePassword,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 0, 64, 255),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        icon: _isChangingPassword
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : const Icon(Icons.lock_reset_rounded),
+        label: Text(
+          _isChangingPassword ? 'ALTERANDO SENHA...' : 'ALTERAR SENHA',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
@@ -886,6 +1160,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildProfileHeader(),
                 _buildProfileInfoCard(),
+                _buildPasswordChangeCard(),
                 const SizedBox(height: 40),
               ],
             ),

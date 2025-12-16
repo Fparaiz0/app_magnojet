@@ -9,6 +9,7 @@ import 'tip_selection_page.dart';
 import 'settings_page.dart';
 import 'profile_page.dart';
 import 'history_page.dart';
+import 'catalog_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -942,6 +943,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
               (route) => false,
             );
           }
+        },
+        onCatalogTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CatalogPage()),
+          );
         },
         onHistoryTap: () {
           Navigator.pop(context);

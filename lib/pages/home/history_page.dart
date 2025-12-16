@@ -10,6 +10,7 @@ import 'favorites_page.dart';
 import 'profile_page.dart';
 import 'settings_page.dart';
 import 'search_history_detail_page.dart';
+import 'catalog_page.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -757,6 +758,13 @@ class _HistoryPageState extends State<HistoryPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
+          );
+        },
+        onCatalogTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CatalogPage()),
           );
         },
         onHistoryTap: () {

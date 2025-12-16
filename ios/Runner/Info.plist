@@ -18,6 +18,12 @@
 </dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+  <key>NSDownloadsFolderUsageDescription</key>
+  <string>Precisa de permissão para baixar catálogos em PDF</string>
+  <key>UIFileSharingEnabled</key>
+  <true/>
+  <key>LSSupportsOpeningDocumentsInPlace</key>
+  <true/>
 	<key>CFBundleDisplayName</key>
 	<string>MagnoJet</string>
 	<key>CFBundleExecutable</key>

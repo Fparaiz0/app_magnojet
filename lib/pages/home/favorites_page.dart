@@ -904,7 +904,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
-        centerTitle: true,
       ),
       drawer: CustomDrawer(
         currentRoute: '/favorites',

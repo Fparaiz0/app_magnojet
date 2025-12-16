@@ -40,8 +40,18 @@
   </p>
   <p align="center" valign="top" >
     <img src="assets/images/page_home.png" width="250" title="Tela Inicial">
-    <img src="assets/images/drawer.png" width="250" title="Drawer">
+    <img src="assets/images/page_drawer.png" width="250" title="Drawer">
     <img src="assets/images/page_tip_selection.png" width="250" title="Tela de Seleção de pontas">
+  </p>
+  <p align="center" valign="top" >
+    <img src="assets/images/page_tip_details.png" width="250" title="Tela de Detalhes da ponta">
+    <img src="assets/images/page_favorites.png" width="250" title="Tela de Favoritas">
+    <img src="assets/images/page_history.png" width="250" title="Tela de Histórico">
+  </p>
+  <p align="center" valign="top" >
+    <img src="assets/images/page_catalog.png" width="250" title="Tela de Catalogo">
+    <img src="assets/images/page_settings.png" width="250" title="Tela de Configurações">
+    <img src="assets/images/page_profile.png" width="250" title="Tela de Perfil">
   </p>
 
 ---

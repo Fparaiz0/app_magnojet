@@ -253,9 +253,11 @@ class _HomePageState extends State<HomePage> {
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () {},
-            tooltip: 'Histórico',
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _showLogoutDialog();
+            },
+            tooltip: 'Sair',
           ),
         ],
       ),

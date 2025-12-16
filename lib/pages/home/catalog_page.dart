@@ -715,75 +715,78 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
   Widget _buildThumbnail(CatalogItem item, bool isDownloaded) {
-    return Stack(
-      children: [
-        Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            color: primaryColor.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: borderColor, width: 1),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              item.thumbnailUrl,
-              fit: BoxFit.contain,
-              width: 90,
-              height: 90,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                    strokeWidth: 2,
-                    color: primaryColor.withValues(alpha: 0.5),
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey.shade100,
-                  child: Icon(
-                    Icons.picture_as_pdf_rounded,
-                    size: 30,
-                    color: primaryColor.withValues(alpha: 0.5),
-                  ),
-                );
-              },
+    return Container(
+      padding: const EdgeInsets.all(6),
+      child: Stack(
+        children: [
+          Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor, width: 1),
             ),
-          ),
-        ),
-        if (isDownloaded)
-          Positioned(
-            top: -6,
-            right: -6,
-            child: Container(
-              padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: successColor,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: successColor.withValues(alpha: 0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.check_rounded,
-                size: 12,
-                color: Colors.white,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                item.thumbnailUrl,
+                fit: BoxFit.contain,
+                width: 90,
+                height: 90,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                      strokeWidth: 2,
+                      color: primaryColor.withValues(alpha: 0.5),
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey.shade100,
+                    child: Icon(
+                      Icons.picture_as_pdf_rounded,
+                      size: 30,
+                      color: primaryColor.withValues(alpha: 0.5),
+                    ),
+                  );
+                },
               ),
             ),
           ),
-      ],
+          if (isDownloaded)
+            Positioned(
+              top: -2,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: successColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: successColor.withValues(alpha: 0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.check_rounded,
+                  size: 12,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -873,7 +876,7 @@ class _CatalogPageState extends State<CatalogPage> {
       spacing: 8,
       runSpacing: 8,
       children: [
-        _buildInfoChip('v${item.version}', Icons.update_rounded),
+        _buildInfoChip('V${item.version}', Icons.update_rounded),
         _buildInfoChip(item.fileSize, Icons.insert_drive_file_rounded),
         _buildInfoChip(item.formattedDate, Icons.calendar_today_rounded),
       ],

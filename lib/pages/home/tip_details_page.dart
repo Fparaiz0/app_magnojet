@@ -737,11 +737,11 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
 
   Widget _buildApplicationTips() {
     final tips = <String>[
-      'Verifique sempre a compatibilidade da ponta com o produto a ser aplicado',
-      'Mantenha a pressão dentro dos limites recomendados pelo fabricante',
-      'Realize calibração periódica do equipamento',
-      'Observe as condições climáticas durante a aplicação',
-      'Use EPI adequado durante a aplicação',
+      'Verifique sempre a compatibilidade da ponta com o produto a ser aplicado.',
+      'Mantenha a pressão dentro dos limites recomendados pela MagnoJet.',
+      'Realize calibração periódica do equipamento.',
+      'Observe as condições climáticas durante a aplicação.',
+      'Use EPI adequado durante a aplicação.',
     ];
 
     return Container(

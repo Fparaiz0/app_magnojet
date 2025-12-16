@@ -701,31 +701,28 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildSectionHeader(
-                icon: Icons.lock_outline_rounded,
-                title: 'Alterar Senha',
-              ),
-              IconButton(
-                onPressed: _togglePasswordSection,
-                icon: Icon(
+          GestureDetector(
+            onTap: _togglePasswordSection,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildSectionHeader(
+                  icon: Icons.lock_outline_rounded,
+                  title: 'Alterar Senha',
+                ),
+                Icon(
                   _showPasswordSection
                       ? Icons.expand_less_rounded
                       : Icons.expand_more_rounded,
                   color: primaryColor,
                 ),
-                tooltip: _showPasswordSection
-                    ? 'Ocultar alteração de senha'
-                    : 'Mostrar alteração de senha',
-              ),
-            ],
+              ],
+            ),
           ),
           if (_showPasswordSection) ...[
             const SizedBox(height: 16),
             const Text(
-              'Para alterar sua senha, primeiro confirme sua senha atual e depois digite a nova senha.',
+              'Para alterar sua senha, primeiro confirme sua senha atual e depois digite a nova senha!',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey,

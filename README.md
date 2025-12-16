@@ -40,8 +40,18 @@
   </p>
   <p align="center" valign="top" >
     <img src="assets/images/page_home.png" width="250" title="Home Screen">
-    <img src="assets/images/drawer.png" width="250" title="Drawer">
+    <img src="assets/images/page_drawer.png" width="250" title="Drawer Screen">
     <img src="assets/images/page_tip_selection.png" width="250" title="Nozzle Selection Screen">
+  </p>
+  <p align="center" valign="top" >
+    <img src="assets/images/page_tip_details.png" width="250" title="Tip Details Screen">
+    <img src="assets/images/page_favorites.png" width="250" title="Favorites Screen">
+    <img src="assets/images/page_history.png" width="250" title="History Screen">
+  </p>
+  <p align="center" valign="top" >
+    <img src="assets/images/page_catalog.png" width="250" title="Catalog Screen">
+    <img src="assets/images/page_settings.png" width="250" title="Settings Screen">
+    <img src="assets/images/page_profile.png" width="250" title="Profile Screen">
   </p>
 
 ---

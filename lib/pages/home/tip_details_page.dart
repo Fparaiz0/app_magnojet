@@ -8,6 +8,7 @@ import 'home_page.dart';
 import 'tip_selection_page.dart';
 import 'settings_page.dart';
 import 'history_page.dart';
+import 'catalog_page.dart';
 
 class TipDetailsPage extends StatefulWidget {
   final TipModel tip;
@@ -898,6 +899,13 @@ class _TipDetailsPageState extends State<TipDetailsPage> {
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
             (route) => false,
+          );
+        },
+        onCatalogTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CatalogPage()),
           );
         },
         onHistoryTap: () {

@@ -12,6 +12,7 @@ import '../auth/login_page.dart';
 import 'settings_page.dart';
 import 'profile_page.dart';
 import 'history_page.dart';
+import 'catalog_page.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});
@@ -1253,6 +1254,13 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const FavoritesPage()),
+          );
+        },
+        onCatalogTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CatalogPage()),
           );
         },
         onHistoryTap: () {

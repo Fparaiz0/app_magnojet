@@ -213,7 +213,7 @@ class CustomDrawer extends StatelessWidget {
                     ),
                     _buildDrawerItem(
                       context: context,
-                      icon: Icons.agriculture_rounded,
+                      icon: Icons.book_rounded,
                       title: 'Catálogo',
                       isSelected: currentRoute == '/catalog',
                       onTap: onCatalogTap,

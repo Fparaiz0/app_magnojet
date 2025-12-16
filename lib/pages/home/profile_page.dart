@@ -12,6 +12,7 @@ import 'tip_selection_page.dart';
 import 'settings_page.dart';
 import 'dart:async';
 import 'history_page.dart';
+import 'catalog_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -1145,6 +1146,13 @@ class _ProfilePageState extends State<ProfilePage> {
           MaterialPageRoute(builder: (context) => const FavoritesPage()),
           (route) => false,
         ),
+        onCatalogTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CatalogPage()),
+          );
+        },
         onHistoryTap: () {
           Navigator.pop(context);
           Navigator.push(

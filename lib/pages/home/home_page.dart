@@ -7,6 +7,7 @@ import 'favorites_page.dart';
 import 'settings_page.dart';
 import 'profile_page.dart';
 import 'history_page.dart';
+import 'catalog_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -297,6 +298,13 @@ class _HomePageState extends State<HomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const HistoryPage()),
+          );
+        },
+        onCatalogTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CatalogPage()),
           );
         },
         onSettingsTap: () {

@@ -29,6 +29,9 @@ dependencies:
   device_info_plus: ^12.3.0
   flutter_media_store: ^1.3.0
 
+  # Para Compartilhamento
+  share_plus: ^7.0.1
+
   # Armazenamento Local
   sqflite: ^2.3.3
   path_provider: ^2.1.3

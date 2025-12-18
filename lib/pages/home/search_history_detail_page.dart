@@ -86,6 +86,18 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
     return params;
   }
 
+  String? _getModoAcao() {
+    return _parameters['action_mode'] ??
+        _parameters['modo_acao'] ??
+        _parameters['modoAcao'];
+  }
+
+  String? _getAplicacao() {
+    return _parameters['aplicacao'] ??
+        _parameters['tipo_aplicacao'] ??
+        _parameters['application_type'];
+  }
+
   bool _isNumeric(String str) {
     if (str.isEmpty) return false;
     return double.tryParse(str) != null;
@@ -213,6 +225,8 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
     final dropletSize = _dropletSizeMap[tipData['dropletSizeId']] ?? 'N/A';
     final imageUrl = tipData['imageUrl'] as String?;
     final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+    final modoAcao = _getModoAcao();
+    final aplicacao = _getAplicacao();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -232,7 +246,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            _navigateToTipDetails(tipData);
+            _navigateToTipDetails(tipData, modoAcao, aplicacao);
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
@@ -415,7 +429,8 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
     );
   }
 
-  void _navigateToTipDetails(Map<String, dynamic> tipData) {
+  void _navigateToTipDetails(
+      Map<String, dynamic> tipData, String? modoAcao, String? aplicacao) {
     final hasPWM = _parameters['pwm'] == 'Ativado';
     final speed = double.tryParse(
             _parameters['speed']?.toString().split(' ')[0] ?? '12.0') ??
@@ -431,6 +446,8 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
       dropletSizeId: tipData['dropletSizeId'] as int,
       imageUrl: tipData['imageUrl'] as String?,
       speed: speed,
+      modoAcao: modoAcao,
+      aplicacao: aplicacao,
     );
 
     Navigator.push(
@@ -448,6 +465,9 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final modoAcao = _getModoAcao();
+    final aplicacao = _getAplicacao();
+
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -490,9 +510,21 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
                             ),
                           ),
                           const SizedBox(height: 16),
+                          if (modoAcao != null && modoAcao.isNotEmpty)
+                            _buildParameterItem('Modo de Ação', modoAcao),
+                          if (aplicacao != null && aplicacao.isNotEmpty)
+                            _buildParameterItem('Tipo de Aplicação', aplicacao),
                           if (_parameters.isNotEmpty)
                             Column(
                               children: _parameters.entries.map((entry) {
+                                if (entry.key == 'action_mode' ||
+                                    entry.key == 'modo_acao' ||
+                                    entry.key == 'modoAcao' ||
+                                    entry.key == 'aplicacao' ||
+                                    entry.key == 'tipo_aplicacao' ||
+                                    entry.key == 'application_type') {
+                                  return const SizedBox.shrink();
+                                }
                                 final displayName = _getDisplayName(entry.key);
                                 final formattedValue =
                                     _formatValue(entry.key, entry.value);

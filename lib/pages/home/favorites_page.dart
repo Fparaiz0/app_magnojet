@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:math' as math;
 import '../../models/tip_selection_model.dart';
 import '../../widgets/custom_drawer.dart';
 import '../auth/login_page.dart';
@@ -61,6 +64,41 @@ class _FavoritesPageState extends State<FavoritesPage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<String> _imageToBase64(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+        final base64 = base64Encode(bytes);
+        final mimeType = _getMimeType(imageUrl);
+        return 'data:$mimeType;base64,$base64';
+      }
+    } catch (_) {}
+    return '';
+  }
+
+  String _getMimeType(String url) {
+    final lowerUrl = url.toLowerCase();
+
+    if (lowerUrl.endsWith('.png')) {
+      return 'image/png';
+    }
+
+    if (lowerUrl.endsWith('.jpg') || lowerUrl.endsWith('.jpeg')) {
+      return 'image/jpeg';
+    }
+
+    if (lowerUrl.endsWith('.gif')) {
+      return 'image/gif';
+    }
+
+    if (lowerUrl.endsWith('.svg')) {
+      return 'image/svg+xml';
+    }
+
+    return 'image/jpeg';
   }
 
   Future<void> _loadUserData() async {
@@ -136,16 +174,16 @@ class _FavoritesPageState extends State<FavoritesPage> {
           favoritesResponse.map<int>((fav) => fav['tip_id'] as int).toList();
 
       final tipsResponse = await supabase.from('selecao').select('''
-	            *,
-	            pontas:pontas(id, ponta),
-	            modelo:modelo(id, modelo),
-	            pressao:pressao(id, bar),
-	            vazao:vazao(id, litros),
-	            espacamento:espacamento(id, cm),
-	            tamanho_gota:tamanho_gota!inner(id, tamanho_gota),
-	            modo_acao:modo_acao(modo_acao),
-	            aplicacao:aplicacao(aplicacao)
-	          ''').inFilter('id', tipIds).limit(100);
+              *,
+              pontas:pontas(id, ponta),
+              modelo:modelo(id, modelo),
+              pressao:pressao(id, bar),
+              vazao:vazao(id, litros),
+              espacamento:espacamento(id, cm),
+              tamanho_gota:tamanho_gota!inner(id, tamanho_gota),
+              modo_acao:modo_acao(modo_acao),
+              aplicacao:aplicacao(aplicacao)
+            ''').inFilter('id', tipIds).limit(100);
 
       final favoriteTips = tipsResponse
           .map<TipModel>((tip) => _convertSelecaoToTipModel(tip))
@@ -524,7 +562,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const AlertDialog(
+        builder: (context) => AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -537,13 +575,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
       );
 
       final StringBuffer htmlContent = StringBuffer();
-
-      final String svgPlaceholder = '''
-data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 24 24">
-  <rect width="100%" height="100%" fill="#f5f5f5"/>
-</svg>
-'''
-          .replaceAll('\n', '');
 
       htmlContent.write('''
 <!DOCTYPE html>
@@ -1221,25 +1252,40 @@ data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" heig
   ''');
 
         if (_userAvatarUrl != null && _userAvatarUrl!.isNotEmpty) {
-          htmlContent.write('''
-      <img src="$_userAvatarUrl" 
-           alt="Foto do usuário" 
-           class="user-avatar"
-           onerror="this.onerror=null; this.style.display='none'; this.parentNode.innerHTML += <div class="user-details">
-        <p><strong>Usuário:</strong> $_userName</p>
-        <p><strong>Data de geração:</strong> $formattedDateTime</p>
-      </div>
-    </div>
-    ''');
+          try {
+            final avatarBase64 = await _imageToBase64(_userAvatarUrl!);
+            if (avatarBase64.isNotEmpty) {
+              htmlContent.write('''
+        <img src="$avatarBase64" 
+             alt="Foto do usuário" 
+             class="user-avatar">
+      ''');
+            } else {
+              htmlContent.write('''
+        <div class="avatar-fallback">${_userName.substring(0, 1).toUpperCase()}</div>
+      ''');
+            }
+          } catch (e) {
+            htmlContent.write('''
+        <div class="avatar-fallback">${_userName.substring(0, 1).toUpperCase()}</div>
+      ''');
+          }
         } else {
           htmlContent.write('''
-      <div class="avatar-fallback">👤</div>
-    ''');
+        <div class="avatar-fallback">${_userName.substring(0, 1).toUpperCase()}</div>
+      ''');
         }
+
+        htmlContent.write('''
+        <div class="user-details">
+            <p class="user-name">$_userName</p>
+            <p class="user-date">Gerado em: $formattedDateTime</p>
+        </div>
+    </div>
+    ''');
       }
 
       htmlContent.write('''
-        <br>
         <div class="summary">
             <h2>📊 Resumo da Lista</h2>
             <p>Total de <strong>${filteredFavorites.length} ponta${filteredFavorites.length != 1 ? 's' : ''}</strong> favoritada${filteredFavorites.length != 1 ? 's' : ''}</p>
@@ -1262,15 +1308,42 @@ data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" heig
       ''');
 
         if (tip.imageUrl != null && tip.imageUrl!.isNotEmpty) {
-          htmlContent.write('''
-          <img src="${tip.imageUrl!}" 
+          try {
+            final imageBase64 = await _imageToBase64(tip.imageUrl!);
+            if (imageBase64.isNotEmpty) {
+              htmlContent.write('''
+          <img src="$imageBase64" 
                alt="${tip.name}" 
-               class="tip-image" 
-               onerror="this.onerror=null; this.src='$svgPlaceholder
+               class="tip-image">
         ''');
+            } else {
+              final fallbackSvg = '''
+data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 24 24">
+  <rect width="100%" height="100%" fill="#f5f5f5"/>
+  <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#ccc" font-size="14">${tip.name.substring(0, math.min(tip.name.length, 10))}</text>
+</svg>'''))}''';
+              htmlContent.write('''
+          <img src="$fallbackSvg" alt="${tip.name}" class="tip-image">
+        ''');
+            }
+          } catch (e) {
+            final fallbackSvg = '''
+data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 24 24">
+  <rect width="100%" height="100%" fill="#f5f5f5"/>
+  <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#ccc" font-size="14">Sem Imagem</text>
+</svg>'''))}''';
+            htmlContent.write('''
+          <img src="$fallbackSvg" alt="${tip.name}" class="tip-image">
+        ''');
+          }
         } else {
+          final fallbackSvg = '''
+data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 24 24">
+  <rect width="100%" height="100%" fill="#f5f5f5"/>
+  <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#ccc" font-size="14">Sem Imagem</text>
+</svg>'''))}''';
           htmlContent.write('''
-          <img src="$svgPlaceholder" alt="Sem imagem" class="tip-image">
+          <img src="$fallbackSvg" alt="Sem imagem" class="tip-image">
         ''');
         }
 

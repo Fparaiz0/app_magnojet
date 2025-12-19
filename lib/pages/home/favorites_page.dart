@@ -1437,7 +1437,7 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
 
       await Share.shareXFiles(
         [XFile(htmlFile.path)],
-        text: 'Confira minha lista de pontas favoritas do Magnojet! 🚜',
+        text: 'Confira minha lista de pontas favoritas da Magnojet! 🚜',
         subject: 'Lista de Pontas Favoritas - Magnojet',
       );
 

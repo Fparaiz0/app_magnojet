@@ -157,13 +157,16 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
       );
+
+      await setLocaleIdentifier('pt_BR');
 
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
-        localeIdentifier: 'pt_BR',
       );
 
       String location = '';

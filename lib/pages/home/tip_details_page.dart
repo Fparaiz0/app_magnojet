@@ -15,6 +15,7 @@ import 'tip_selection_page.dart';
 import 'settings_page.dart';
 import 'history_page.dart';
 import 'catalog_page.dart';
+import 'profile_page.dart';
 
 class TipDetailsPage extends StatefulWidget {
   final TipModel tip;
@@ -1772,6 +1773,13 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
             (route) => false,
+          );
+        },
+        onProfileTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()),
           );
         },
         onTipsTap: () {

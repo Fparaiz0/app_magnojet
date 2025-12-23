@@ -1435,10 +1435,12 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
         Navigator.pop(context);
       }
 
-      await Share.shareXFiles(
-        [XFile(htmlFile.path)],
-        text: 'Confira minha lista de pontas favoritas da Magnojet! 🚜',
-        subject: 'Lista de Pontas Favoritas - Magnojet',
+      await SharePlus.instance.share(
+        ShareParams(
+          text: 'Confira minha lista de pontas favoritas da Magnojet! 🚜',
+          subject: 'Lista de Pontas Favoritas - Magnojet',
+          files: [XFile(htmlFile.path)],
+        ),
       );
 
       Future.delayed(const Duration(minutes: 2), () async {

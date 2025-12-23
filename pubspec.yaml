@@ -30,15 +30,15 @@ dependencies:
   flutter_media_store: ^1.3.0
 
   # Para Compartilhamento
-  share_plus: ^7.0.1
+  share_plus: ^12.0.1
 
   # Armazenamento Local
   sqflite: ^2.3.3
   path_provider: ^2.1.3
 
   # Localização e GPS
-  geolocator: ^11.0.0
-  geocoding: ^2.1.0
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
 
   # Mídia
   image_picker: ^1.0.4

@@ -286,8 +286,10 @@ class _AuthGateState extends State<AuthGate> {
       }
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
-        timeLimit: const Duration(seconds: 10),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 10),
+        ),
       );
 
       String location = await _getLocationFromCoordinates(
@@ -308,10 +310,11 @@ class _AuthGateState extends State<AuthGate> {
 
   Future<String> _getLocationFromCoordinates(double lat, double lng) async {
     try {
+      await setLocaleIdentifier('pt_BR');
+
       List<Placemark> placemarks = await placemarkFromCoordinates(
         lat,
         lng,
-        localeIdentifier: 'pt_BR',
       );
 
       if (placemarks.isEmpty) {

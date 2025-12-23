@@ -1066,11 +1066,13 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
         Navigator.pop(context);
       }
 
-      await Share.shareXFiles(
-        [XFile(htmlFile.path)],
-        text:
-            'Confira a ficha técnica da ponta ${tip.name} - ${tip.model} da Magnojet! 🚜\n\nVazão: ${tip.flowRate} L/min • Pressão: ${tip.pressure} bar\nTamanho da gota: $dropletSize',
-        subject: 'Ficha Técnica: ${tip.name} - ${tip.model} - Magnojet',
+      await SharePlus.instance.share(
+        ShareParams(
+          text:
+              'Confira a ficha técnica da ponta ${tip.name} - ${tip.model} da Magnojet! 🚜\n\nVazão: ${tip.flowRate} L/min • Pressão: ${tip.pressure} bar\nTamanho da gota: $dropletSize',
+          subject: 'Ficha Técnica: ${tip.name} - ${tip.model} - Magnojet',
+          files: [XFile(htmlFile.path)],
+        ),
       );
 
       Future.delayed(const Duration(minutes: 2), () async {

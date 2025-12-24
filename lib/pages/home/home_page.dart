@@ -449,25 +449,53 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
+                          isDisabled: false,
+                        ),
+                        _buildFeatureCard(
+                          icon: Icons.bookmark_rounded,
+                          title: 'Favoritas',
+                          color: primaryColor,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const FavoritesPage(),
+                              ),
+                            );
+                          },
+                          isDisabled: false,
+                        ),
+                        _buildFeatureCard(
+                          icon: Icons.history_rounded,
+                          title: 'Histórico',
+                          color: primaryColor,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HistoryPage(),
+                              ),
+                            );
+                          },
+                          isDisabled: false,
+                        ),
+                        _buildFeatureCard(
+                          icon: Icons.book_rounded,
+                          title: 'Catálogos',
+                          color: primaryColor,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CatalogPage(),
+                              ),
+                            );
+                          },
+                          isDisabled: false,
                         ),
                         _buildFeatureCard(
                           icon: Icons.calculate_rounded,
                           title: 'Cálculos de Vazão',
-                          color: primaryColor,
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content:
-                                    Text('Funcionalidade em desenvolvimento'),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
-                          },
-                          isDisabled: true,
-                        ),
-                        _buildFeatureCard(
-                          icon: Icons.analytics_rounded,
-                          title: 'Tabelas Técnicas',
                           color: primaryColor,
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(

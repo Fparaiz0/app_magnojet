@@ -63,6 +63,12 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   final Map<String, ImageProvider> _imageCache = {};
 
+  final TextEditingController _pressureController = TextEditingController();
+  final TextEditingController _flowRatePerHectareController =
+      TextEditingController();
+  final TextEditingController _spacingController = TextEditingController();
+  final TextEditingController _speedController = TextEditingController();
+
   static const primaryColor = Color(0xFF15325A);
   static const backgroundColor = Color(0xFFF5F7FA);
 
@@ -117,7 +123,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generatePressureValues() {
     final values = <double>[];
-    for (double i = 1.0; i <= 15.0; i += 0.1) {
+    for (double i = 1.0; i <= 150.0; i += 0.1) {
       values.add(double.parse(i.toStringAsFixed(1)));
     }
     return values;
@@ -125,7 +131,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generateFlowRatePerHectareValues() {
     final values = <double>[];
-    for (double i = 50.0; i <= 1000.0; i += 5.0) {
+    for (double i = 1.0; i <= 10000.0; i += 1) {
       values.add(i);
     }
     return values;
@@ -133,7 +139,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generateSpacingValues() {
     final values = <double>[];
-    for (double i = 35.0; i <= 100.0; i += 0.5) {
+    for (double i = 1.0; i <= 1000.0; i += 0.5) {
       values.add(i);
     }
     return values;
@@ -141,7 +147,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generateSpeedValues() {
     final values = <double>[];
-    for (double i = 4.0; i <= 25.0; i += 0.5) {
+    for (double i = 1.0; i <= 300.0; i += 0.5) {
       values.add(i);
     }
     return values;
@@ -152,12 +158,89 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     super.initState();
     _loadUserData();
     _calculateFlowRate();
+
+    _pressureController.text = _pressure.toStringAsFixed(1);
+    _flowRatePerHectareController.text = _flowRatePerHectare.toStringAsFixed(0);
+    _spacingController.text = _spacing.toStringAsFixed(1);
+    _speedController.text = _speed.toStringAsFixed(1);
+
+    _pressureController.addListener(_updatePressureFromController);
+    _flowRatePerHectareController.addListener(_updateFlowRateFromController);
+    _spacingController.addListener(_updateSpacingFromController);
+    _speedController.addListener(_updateSpeedFromController);
   }
 
   @override
   void dispose() {
+    _pressureController.dispose();
+    _flowRatePerHectareController.dispose();
+    _spacingController.dispose();
+    _speedController.dispose();
     _imageCache.clear();
     super.dispose();
+  }
+
+  void _updatePressureFromController() {
+    final text = _pressureController.text;
+    if (text.isNotEmpty) {
+      final value = double.tryParse(text.replaceAll(',', '.'));
+      if (value != null && value >= 0.1 && value <= 150.0) {
+        if (_pressure != value) {
+          setState(() {
+            _pressure = value;
+            _showResults = false;
+          });
+        }
+      }
+    }
+  }
+
+  void _updateFlowRateFromController() {
+    final text = _flowRatePerHectareController.text;
+    if (text.isNotEmpty) {
+      final value = double.tryParse(text.replaceAll(',', '.'));
+      if (value != null && value >= 50.0 && value <= 10000.0) {
+        if (_flowRatePerHectare != value) {
+          setState(() {
+            _flowRatePerHectare = value;
+            _showResults = false;
+          });
+          _calculateFlowRate();
+        }
+      }
+    }
+  }
+
+  void _updateSpacingFromController() {
+    final text = _spacingController.text;
+    if (text.isNotEmpty) {
+      final value = double.tryParse(text.replaceAll(',', '.'));
+      if (value != null && value >= 35.0 && value <= 1000.0) {
+        if (_spacing != value) {
+          setState(() {
+            _spacing = value;
+            _showResults = false;
+          });
+          _calculateFlowRate();
+        }
+      }
+    }
+  }
+
+  void _updateSpeedFromController() {
+    final text = _speedController.text;
+    if (text.isNotEmpty) {
+      final value = double.tryParse(text.replaceAll(',', '.'));
+      if (value != null && value >= 4.0 && value <= 300.0) {
+        if (_speed != value) {
+          setState(() {
+            _speed = value;
+            _showResults = false;
+          });
+          _calculateFlowRate();
+        }
+      }
+    }
   }
 
   void _calculateFlowRate() {
@@ -344,6 +427,12 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
       _speed = 12.0;
       _selectedDropletSizes.clear();
       _availableDropletSizes.clear();
+
+      _pressureController.text = _pressure.toStringAsFixed(1);
+      _flowRatePerHectareController.text =
+          _flowRatePerHectare.toStringAsFixed(0);
+      _spacingController.text = _spacing.toStringAsFixed(1);
+      _speedController.text = _speed.toStringAsFixed(1);
     });
     _calculateFlowRate();
     _scrollController.animateTo(
@@ -441,6 +530,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     required IconData icon,
     required List<double> options,
     required ValueChanged<double> onChanged,
+    required TextEditingController controller,
   }) {
     final currentIndex = options.indexOf(currentValue);
     final canDecrement = currentIndex > 0;
@@ -479,6 +569,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                     ? () {
                         final newValue = options[currentIndex - 1];
                         onChanged(newValue);
+                        controller.text = newValue.toStringAsFixed(
+                            unit == 'bar' || unit == 'cm' ? 1 : 0);
                         setState(() {
                           _showResults = false;
                         });
@@ -499,12 +591,68 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
               ),
               Column(
                 children: [
-                  Text(
-                    _formatExactValue(currentValue, unit),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
+                  SizedBox(
+                    width: 80,
+                    child: TextField(
+                      controller: controller,
+                      textAlign: TextAlign.center,
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                        hintText: currentValue.toStringAsFixed(
+                            unit == 'bar' || unit == 'cm' ? 1 : 0),
+                        hintStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          final parsedValue =
+                              double.tryParse(value.replaceAll(',', '.'));
+                          if (parsedValue != null) {
+                            double newValue = parsedValue;
+
+                            if (label == 'Pressão') {
+                              if (newValue < 1.0) newValue = 1.0;
+                              if (newValue > 150.0) newValue = 150.0;
+                              newValue =
+                                  double.parse(newValue.toStringAsFixed(1));
+                            } else if (label == 'Espaçamento') {
+                              if (newValue < 35.0) newValue = 35.0;
+                              if (newValue > 1000.0) newValue = 1000.0;
+                              newValue =
+                                  double.parse(newValue.toStringAsFixed(1));
+                            } else if (label == 'Velocidade') {
+                              if (newValue < 4.0) newValue = 4.0;
+                              if (newValue > 300.0) newValue = 300.0;
+                              newValue =
+                                  double.parse(newValue.toStringAsFixed(1));
+                            }
+
+                            if (currentValue != newValue) {
+                              onChanged(newValue);
+                              setState(() {
+                                _showResults = false;
+                              });
+                            }
+                          }
+                        }
+                      },
+                      onTap: () {
+                        controller.selection = TextSelection(
+                          baseOffset: 0,
+                          extentOffset: controller.text.length,
+                        );
+                      },
                     ),
                   ),
                   Text(
@@ -521,6 +669,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                     ? () {
                         final newValue = options[currentIndex + 1];
                         onChanged(newValue);
+                        controller.text = newValue.toStringAsFixed(
+                            unit == 'bar' || unit == 'cm' ? 1 : 0);
                         setState(() {
                           _showResults = false;
                         });
@@ -589,6 +739,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                             final newValue = options[currentIndex - 1];
                             setState(() {
                               _flowRatePerHectare = newValue;
+                              _flowRatePerHectareController.text =
+                                  newValue.toStringAsFixed(0);
                               _showResults = false;
                             });
                             _calculateFlowRate();
@@ -609,12 +761,53 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                   ),
                   Column(
                     children: [
-                      Text(
-                        '${_flowRatePerHectare.toInt()} L/ha',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
+                      SizedBox(
+                        width: 80,
+                        child: TextField(
+                          controller: _flowRatePerHectareController,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                            hintText: _flowRatePerHectare.toStringAsFixed(0),
+                            hintStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
+                          onChanged: (value) {
+                            if (value.isNotEmpty) {
+                              final parsedValue = double.tryParse(value);
+                              if (parsedValue != null) {
+                                double newValue = parsedValue;
+                                if (newValue < 50.0) newValue = 50.0;
+                                if (newValue > 10000.0) newValue = 10000.0;
+
+                                if (_flowRatePerHectare != newValue) {
+                                  setState(() {
+                                    _flowRatePerHectare = newValue;
+                                    _showResults = false;
+                                  });
+                                  _calculateFlowRate();
+                                }
+                              }
+                            }
+                          },
+                          onTap: () {
+                            _flowRatePerHectareController.selection =
+                                TextSelection(
+                              baseOffset: 0,
+                              extentOffset:
+                                  _flowRatePerHectareController.text.length,
+                            );
+                          },
                         ),
                       ),
                       Text(
@@ -640,6 +833,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                             final newValue = options[currentIndex + 1];
                             setState(() {
                               _flowRatePerHectare = newValue;
+                              _flowRatePerHectareController.text =
+                                  newValue.toStringAsFixed(0);
                               _showResults = false;
                             });
                             _calculateFlowRate();
@@ -666,20 +861,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         const SizedBox(height: 16),
       ],
     );
-  }
-
-  String _formatExactValue(double value, String unit) {
-    if (value == value.toInt().toDouble()) {
-      return '${value.toInt()} $unit';
-    }
-    final String stringValue = value.toString();
-    final int decimalPlaces = stringValue.split('.').last.length;
-
-    if (decimalPlaces <= 2) {
-      return '${value.toStringAsFixed(decimalPlaces)} $unit';
-    } else {
-      return '${value.toStringAsFixed(2)} $unit';
-    }
   }
 
   Widget _buildSectionHeader(String title, IconData icon, {String? subtitle}) {
@@ -1427,7 +1608,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                   _buildSectionHeader(
                                       'Parâmetros Técnicos', Icons.tune_rounded,
                                       subtitle:
-                                          'Ajuste os valores usando os botões + e -'),
+                                          'Ajuste os valores usando os botões + e - ou digite manualmente'),
                                   _buildIncrementDecrementSelection(
                                     label: 'Pressão',
                                     currentValue: _pressure,
@@ -1437,6 +1618,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                     onChanged: (newValue) => setState(() {
                                       _pressure = newValue;
                                     }),
+                                    controller: _pressureController,
                                   ),
                                   _buildFlowRateSelection(),
                                   _buildIncrementDecrementSelection(
@@ -1450,6 +1632,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                       _showResults = false;
                                       _calculateFlowRate();
                                     }),
+                                    controller: _spacingController,
                                   ),
                                   _buildIncrementDecrementSelection(
                                     label: 'Velocidade',
@@ -1462,6 +1645,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                       _showResults = false;
                                       _calculateFlowRate();
                                     }),
+                                    controller: _speedController,
                                   ),
                                 ],
                               ),

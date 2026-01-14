@@ -54,40 +54,42 @@ class TipService {
 
   Future<List<int>> _findVazaoIdsWithPriority(
     double flowRateValue, {
-    double primaryTolerance = 0.5,
-    double secondaryTolerance = 1.0,
+    double primaryTolerance = 0.0,
+    double secondaryTolerance = 0.01,
   }) async {
     try {
       final preciseResponse = await _supabase
           .from('vazao')
           .select('id, litros')
-          .gte('litros', flowRateValue - primaryTolerance)
-          .lte('litros', flowRateValue + primaryTolerance)
+          .gte('litros', flowRateValue - 0.001)
+          .lte('litros', flowRateValue + 0.001)
           .order('litros');
 
       if (preciseResponse.isNotEmpty) {
         return preciseResponse.map((item) => item['id'] as int).toList();
       }
 
-      final widerResponse = await _supabase
-          .from('vazao')
-          .select('id, litros')
-          .gte('litros', flowRateValue - secondaryTolerance)
-          .lte('litros', flowRateValue + secondaryTolerance)
-          .order('litros');
+      final allValues =
+          await _supabase.from('vazao').select('id, litros').order('litros');
 
-      if (widerResponse.isNotEmpty) {
-        return widerResponse.map((item) => item['id'] as int).toList();
+      if (allValues.isNotEmpty) {
+        double closestDiff = double.infinity;
+        int closestId = -1;
+
+        for (var item in allValues) {
+          final litros = _parseDouble(item['litros']);
+          final diff = (litros - flowRateValue).abs();
+
+          if (diff < closestDiff) {
+            closestDiff = diff;
+            closestId = item['id'] as int;
+          }
+        }
+
+        return closestId != -1 ? [closestId] : [];
       }
 
-      final widestResponse = await _supabase
-          .from('vazao')
-          .select('id, litros')
-          .gte('litros', flowRateValue * 0.7)
-          .lte('litros', flowRateValue * 1.3)
-          .order('litros');
-
-      return widestResponse.map((item) => item['id'] as int).toList();
+      return [];
     } catch (e) {
       return [];
     }

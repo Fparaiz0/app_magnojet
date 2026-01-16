@@ -147,7 +147,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
 
   List<double> _generateSpeedValues() {
     final values = <double>[];
-    for (double i = 1.0; i <= 300.0; i += 0.5) {
+    for (double i = 1.0; i <= 300.0; i += 1) {
       values.add(i);
     }
     return values;

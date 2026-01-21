@@ -18,36 +18,36 @@ dependencies:
 
   # Utilitários
   path: ^1.9.1
-  logger: ^2.3.0
+  logger: ^2.6.2
   intl: ^0.20.2
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.5.4
 
   # Para download e abertura de arquivos
-  permission_handler: ^11.0.1
-  open_file: ^3.3.3
-  http: ^1.1.0
+  permission_handler: ^11.4.0
+  open_file: ^3.5.11
+  http: ^1.6.0
   device_info_plus: ^12.3.0
-  flutter_media_store: ^1.3.0
+  flutter_media_store: ^1.3.1
 
   # Para Compartilhamento
   share_plus: ^12.0.1
 
   # Armazenamento Local
-  sqflite: ^2.3.3
-  path_provider: ^2.1.3
+  sqflite: ^2.4.2
+  path_provider: ^2.1.5
 
   # Localização e GPS
   geolocator: ^14.0.2
   geocoding: ^4.0.0
 
   # Mídia
-  image_picker: ^1.0.4
+  image_picker: ^1.2.1
 
   # Conectividade
   connectivity_plus: ^7.0.0
 
   # Backend e Autenticação
-  supabase_flutter: ^2.10.3
+  supabase_flutter: ^2.12.0
 
   # Variáveis de Ambiente
   flutter_dotenv: ^6.0.0

@@ -1031,10 +1031,14 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
                     </div>
                     <div class="tip-item">
                         <span class="tip-bullet">4</span>
-                        Observe as condições climáticas durante a aplicação.
+                        Limpar os bicos de pulverização apenas com produtos neutros.
                     </div>
                     <div class="tip-item">
                         <span class="tip-bullet">5</span>
+                        Observe as condições climáticas durante a aplicação.
+                    </div>
+                    <div class="tip-item">
+                        <span class="tip-bullet">6</span>
                         Use EPI adequado durante a aplicação.
                     </div>
                 </div>
@@ -1635,6 +1639,7 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
       'Verifique sempre a compatibilidade da ponta com o produto a ser aplicado.',
       'Mantenha a pressão dentro dos limites recomendados pela MagnoJet.',
       'Realize calibração periódica do equipamento.',
+      'Limpar os bicos de pulverização apenas com produtos neutros.',
       'Observe as condições climáticas durante a aplicação.',
       'Use EPI adequado durante a aplicação.',
     ];

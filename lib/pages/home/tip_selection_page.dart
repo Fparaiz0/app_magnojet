@@ -46,11 +46,11 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
   String _userName = '';
   String? _userAvatarUrl;
   bool _isLoadingUser = true;
-  double _pressure = 3.0;
-  double _flowRatePerHectare = 100.0;
-  double _flowRate = 1.0;
-  double _spacing = 50.0;
-  double _speed = 12.0;
+  double _pressure = 3;
+  double _flowRatePerHectare = 100;
+  double _flowRate = 1;
+  double _spacing = 50;
+  double _speed = 12;
 
   String? _selectedApplicationType = 'Aplicação em Solo';
   String? _selectedApplication = 'Herbicida';
@@ -199,7 +199,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     final text = _flowRatePerHectareController.text;
     if (text.isNotEmpty) {
       final value = double.tryParse(text.replaceAll(',', '.'));
-      if (value != null && value >= 50.0 && value <= 10000.0) {
+      if (value != null && value >= 1.0 && value <= 10000.0) {
         if (_flowRatePerHectare != value) {
           setState(() {
             _flowRatePerHectare = value;
@@ -215,7 +215,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     final text = _spacingController.text;
     if (text.isNotEmpty) {
       final value = double.tryParse(text.replaceAll(',', '.'));
-      if (value != null && value >= 35.0 && value <= 1000.0) {
+      if (value != null && value >= 1.0 && value <= 1000.0) {
         if (_spacing != value) {
           setState(() {
             _spacing = value;
@@ -231,7 +231,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     final text = _speedController.text;
     if (text.isNotEmpty) {
       final value = double.tryParse(text.replaceAll(',', '.'));
-      if (value != null && value >= 4.0 && value <= 300.0) {
+      if (value != null && value >= 1.0 && value <= 300.0) {
         if (_speed != value) {
           setState(() {
             _speed = value;
@@ -787,7 +787,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                               final parsedValue = double.tryParse(value);
                               if (parsedValue != null) {
                                 double newValue = parsedValue;
-                                if (newValue < 50.0) newValue = 50.0;
+                                if (newValue < 1.0) newValue = 50.0;
                                 if (newValue > 10000.0) newValue = 10000.0;
 
                                 if (_flowRatePerHectare != newValue) {

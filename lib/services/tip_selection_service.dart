@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/tip_selection_model.dart';
-import 'dart:developer';
 
 class TipService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -112,8 +111,6 @@ class TipService {
     required int pwmId,
   }) async {
     try {
-      await debugExistingValues();
-
       final vazaoIds = await _findVazaoIdsWithPriority(
         flowRateValue,
         primaryTolerance: 0.5,
@@ -300,28 +297,5 @@ class TipService {
     }
 
     return filteredValues;
-  }
-
-  Future<void> debugExistingValues() async {
-    final tables = [
-      {'name': 'pressao', 'column': 'bar'},
-      {'name': 'vazao', 'column': 'litros'},
-      {'name': 'espacamento', 'column': 'cm'},
-      {'name': 'velocidade', 'column': 'km_h'},
-    ];
-
-    for (var table in tables) {
-      try {
-        final response = await _supabase
-            .from(table['name']!)
-            .select('id, ${table['column']}')
-            .order('id');
-
-        if (response.isNotEmpty) {
-        } else {}
-      } catch (e) {
-        log('Error in debugExistingValues: $e');
-      }
-    }
   }
 }

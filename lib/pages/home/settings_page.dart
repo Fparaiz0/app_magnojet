@@ -735,19 +735,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                     ),
                     _buildActionButton(
-                      title: 'Exportar dados',
-                      icon: Icons.download_rounded,
-                      color: Colors.blue,
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Funcionalidade em desenvolvimento'),
-                            backgroundColor: Colors.blue,
-                          ),
-                        );
-                      },
-                    ),
-                    _buildActionButton(
                       title: 'Sobre o aplicativo',
                       icon: Icons.info_rounded,
                       color: Colors.green,

@@ -10,7 +10,13 @@
 <array>
   <string>fetch</string>
   <string>location</string>
+  <string>remote-notification</string>
 </array>
+<!-- ADICIONE ESTAS DUAS LINHAS AQUI -->
+<key>PermissionNotificationsWhenInUse</key>
+<true/>
+<key>NSUserNotificationsUsageDescription</key>
+<string>Queremos enviar notificações importantes para você</string>
 <key>NSAppTransportSecurity</key>
 <dict>
   <key>NSAllowsArbitraryLoads</key>

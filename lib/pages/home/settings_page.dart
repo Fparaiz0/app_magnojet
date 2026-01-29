@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
+import '../../widgets/notification_settings_tile.dart';
 import '../../widgets/custom_drawer.dart';
 import '../auth/login_page.dart';
 import 'home_page.dart';
@@ -10,6 +11,7 @@ import 'tip_selection_page.dart';
 import 'profile_page.dart';
 import 'history_page.dart';
 import 'catalog_page.dart';
+import '../../services/notification_permission_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -24,12 +26,13 @@ class _SettingsPageState extends State<SettingsPage> {
   String _userEmail = '';
   String? _userAvatarUrl;
   bool _isLoadingUser = true;
-  bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
   bool _autoSyncEnabled = true;
   String _selectedLanguage = 'Português';
   String _selectedUnitSystem = 'Métrico';
   String _selectedTheme = 'Claro';
+
+  late final NotificationPermissionService _permissionService;
 
   static const primaryColor = Color(0xFF15325A);
   static const backgroundColor = Color(0xFFF5F7FA);
@@ -57,6 +60,21 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     _loadUserData();
     _loadSettings();
+    _permissionService = NotificationPermissionService();
+    _permissionService.initialize().then((_) {
+      _loadNotificationSettings();
+    });
+  }
+
+  Future<void> _loadNotificationSettings() async {
+    try {
+      await _permissionService.getNotificationSettings();
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      debugPrint('Erro ao carregar configurações de notificação: $e');
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -97,7 +115,6 @@ class _SettingsPageState extends State<SettingsPage> {
       final prefs = await SharedPreferences.getInstance();
 
       setState(() {
-        _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
         _darkModeEnabled = prefs.getBool('dark_mode_enabled') ?? false;
         _autoSyncEnabled = prefs.getBool('auto_sync_enabled') ?? true;
         _selectedLanguage = prefs.getString('selected_language') ?? 'Português';
@@ -112,7 +129,6 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      await prefs.setBool('notifications_enabled', _notificationsEnabled);
       await prefs.setBool('dark_mode_enabled', _darkModeEnabled);
       await prefs.setBool('auto_sync_enabled', _autoSyncEnabled);
       await prefs.setString('selected_language', _selectedLanguage);
@@ -295,6 +311,120 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildNotificationSection() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.notifications_rounded, color: primaryColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Notificações',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF15325A),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          NotificationSettingsTile(
+            title: 'Notificações',
+            description: 'Receba notificações importantes',
+            icon: Icons.notifications_active_rounded,
+            activeColor: primaryColor,
+            inactiveColor: Colors.grey[400]!,
+            showStatus: true,
+            onToggleChanged: (enabled) {
+              setState(() {});
+              _saveNotificationPreference(enabled);
+            },
+          ),
+          const Divider(height: 24, color: Colors.grey),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.grey.shade200),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child:
+                      Icon(Icons.sync_rounded, size: 20, color: primaryColor),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sincronização automática',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Sincronize dados automaticamente',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: _autoSyncEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      _autoSyncEnabled = value;
+                    });
+                  },
+                  activeThumbColor: primaryColor,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveNotificationPreference(bool enabled) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('notifications_enabled', enabled);
+    } catch (e) {
+      debugPrint('Erro ao salvar preferência de notificação: $e');
+    }
+  }
+
   Widget _buildSettingsSection({
     required String title,
     required IconData icon,
@@ -333,64 +463,6 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 16),
           ...children,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSwitchSetting({
-    required String title,
-    required String subtitle,
-    required bool value,
-    required IconData icon,
-    required Function(bool) onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade200),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, size: 20, color: primaryColor),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: primaryColor,
-          ),
         ],
       ),
     );
@@ -621,34 +693,7 @@ class _SettingsPageState extends State<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildUserInfoCard(),
-                _buildSettingsSection(
-                  title: 'Notificações',
-                  icon: Icons.notifications_rounded,
-                  children: [
-                    _buildSwitchSetting(
-                      title: 'Notificações push',
-                      subtitle: 'Receba notificações importantes',
-                      value: _notificationsEnabled,
-                      icon: Icons.notifications_active_rounded,
-                      onChanged: (value) {
-                        setState(() {
-                          _notificationsEnabled = value;
-                        });
-                      },
-                    ),
-                    _buildSwitchSetting(
-                      title: 'Sincronização automática',
-                      subtitle: 'Sincronize dados automaticamente',
-                      value: _autoSyncEnabled,
-                      icon: Icons.sync_rounded,
-                      onChanged: (value) {
-                        setState(() {
-                          _autoSyncEnabled = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                _buildNotificationSection(),
                 _buildSettingsSection(
                   title: 'Preferências',
                   icon: Icons.settings_rounded,
@@ -741,7 +786,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                       );
                                     }
                                   } catch (e) {
-                                    // Mostrar mensagem de erro
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(

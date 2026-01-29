@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../widgets/custom_drawer.dart';
 import '../auth/login_page.dart';
 import 'home_page.dart';
@@ -718,14 +719,41 @@ class _SettingsPageState extends State<SettingsPage> {
                                 child: const Text('Cancelar'),
                               ),
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Cache limpo com sucesso!'),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
+
+                                  try {
+                                    final tempDir =
+                                        await getTemporaryDirectory();
+                                    if (await tempDir.exists()) {
+                                      await tempDir.delete(recursive: true);
+                                    }
+
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Cache limpo com sucesso!'),
+                                          backgroundColor: Colors.green,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    // Mostrar mensagem de erro
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text('Erro ao limpar cache: $e'),
+                                          backgroundColor: Colors.red,
+                                          duration: Duration(seconds: 3),
+                                        ),
+                                      );
+                                    }
+                                  }
                                 },
                                 child: const Text('Limpar'),
                               ),

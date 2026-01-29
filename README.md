@@ -62,6 +62,7 @@
   <a href="https://flutter.dev/"><img alt="Flutter" title="Flutter" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg"/></a>
   <a href="https://dart.dev/"><img alt="Dart" title="Dart" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/dart/dart-original.svg"/></a>
   <a href="https://kotlinlang.org/"><img alt="Kotlin" title="Kotlin" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kotlin/kotlin-original.svg"/></a>
+  <a href="https://www.swift.org/"> <img alt="Swift" title="Swift" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/swift/swift-original.svg"/></a>
   <a href="https://www.postgresql.org/"><img alt="PostgreSQL" title="PostgreSQL" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"/></a>
   <a href="https://git-scm.com/"><img alt="Git" title="Git" height="40" width="50" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg"/></a>
   <a href="https://code.visualstudio.com/"><img alt="Visual Studio Code" title="Visual Studio Code" height="40" width="50" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg"/></a>

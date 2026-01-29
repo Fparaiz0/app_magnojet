@@ -12,7 +12,6 @@
   <string>location</string>
   <string>remote-notification</string>
 </array>
-<!-- ADICIONE ESTAS DUAS LINHAS AQUI -->
 <key>PermissionNotificationsWhenInUse</key>
 <true/>
 <key>NSUserNotificationsUsageDescription</key>
@@ -71,9 +70,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	
-	<!-- Adicionar esta linha para geolocator background -->
+
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+
+  <key>FirebaseAppDelegateProxyEnabled</key>
+  <false/>
 </dict>
 </plist>

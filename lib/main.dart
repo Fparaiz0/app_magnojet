@@ -5,12 +5,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import '../services/notification_permission_service.dart';
 
 import 'pages/auth/login_page.dart';
 import 'pages/home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await NotificationPermissionService().initialize();
 
   await dotenv.load(fileName: ".env");
 

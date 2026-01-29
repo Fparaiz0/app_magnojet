@@ -1,13 +1,27 @@
 name: Build
 
-on: pull_request
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   build-android:
-    name: Build Android
+    name: Build Android Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
 
       - name: Create .env file
         env:
@@ -17,15 +31,12 @@ jobs:
           echo "SUPABASE_URL=$SUPABASE_URL" >> .env
           echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
 
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
+      - name: Build APK
+        run: flutter build apk --release
 
-      - run: flutter pub get
-      - run: flutter build apk --release
-
-      - name: Upload APK
+      - name: Upload Release APK
         uses: actions/upload-artifact@v6
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7

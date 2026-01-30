@@ -1,23 +1,24 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:magnojet/models/catalog_model.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/favorites_page.dart';
+import 'package:magnojet/pages/home/history_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/pages/home/profile_page.dart';
+import 'package:magnojet/pages/home/settings_page.dart';
+import 'package:magnojet/pages/home/tip_selection_page.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:open_file/open_file.dart';
-import 'package:http/http.dart' as http;
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../widgets/custom_drawer.dart';
-import '../../models/catalog_model.dart';
-import 'settings_page.dart';
-import 'history_page.dart';
-import 'home_page.dart';
-import 'favorites_page.dart';
-import 'profile_page.dart';
-import 'tip_selection_page.dart';
-import '../auth/login_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});
@@ -565,14 +566,14 @@ class _CatalogPageState extends State<CatalogPage> {
           LinearProgressIndicator(
             value: progress,
             backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation<Color>(secondaryColor),
+            valueColor: const AlwaysStoppedAnimation<Color>(secondaryColor),
             borderRadius: BorderRadius.circular(8),
             minHeight: 6,
           ),
           const SizedBox(height: 8),
           Text(
             'Baixando... $percentage%',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: textSecondary,
               fontWeight: FontWeight.w500,
@@ -725,7 +726,7 @@ class _CatalogPageState extends State<CatalogPage> {
             decoration: BoxDecoration(
               color: primaryColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor, width: 1),
+              border: Border.all(color: borderColor),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -778,7 +779,7 @@ class _CatalogPageState extends State<CatalogPage> {
                     ),
                   ],
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.check_rounded,
                   size: 12,
                   color: Colors.white,
@@ -821,9 +822,9 @@ class _CatalogPageState extends State<CatalogPage> {
                       decoration: BoxDecoration(
                         color: successColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: successColor, width: 1),
+                        border: Border.all(color: successColor),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Baixado',
                         style: TextStyle(
                           fontSize: 10,
@@ -844,7 +845,7 @@ class _CatalogPageState extends State<CatalogPage> {
                 ),
                 child: Text(
                   item.category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: primaryColor,
                     fontWeight: FontWeight.w600,
@@ -861,7 +862,7 @@ class _CatalogPageState extends State<CatalogPage> {
   Widget _buildDescription(CatalogItem item) {
     return Text(
       item.description,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 14,
         color: textSecondary,
         height: 1.5,
@@ -889,7 +890,7 @@ class _CatalogPageState extends State<CatalogPage> {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 1),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -898,7 +899,7 @@ class _CatalogPageState extends State<CatalogPage> {
           const SizedBox(width: 6),
           Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: textSecondary,
               fontWeight: FontWeight.w500,
@@ -919,9 +920,9 @@ class _CatalogPageState extends State<CatalogPage> {
             Icon(Icons.library_books_rounded,
                 size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'Nenhum catálogo disponível',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: textPrimary,
@@ -933,7 +934,7 @@ class _CatalogPageState extends State<CatalogPage> {
                   ? 'Faça login para ver os catálogos disponíveis'
                   : 'Os catálogos aparecerão aqui quando disponíveis',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: textSecondary),
+              style: const TextStyle(fontSize: 14, color: textSecondary),
             ),
             const SizedBox(height: 24),
             if (!_isAuthenticated)

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
+import 'package:magnojet/pages/auth/signup_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../home/home_page.dart';
-import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final supabase = Supabase.instance.client;
   bool _isLoading = false;
   bool _obscurePassword = true;
-  String _selectedLanguage = "Português";
+  String _selectedLanguage = 'Português';
 
   Future<void> _login() async {
     if (!mounted) return;
@@ -44,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Erro inesperado. Tente novamente."),
+            content: Text('Erro inesperado. Tente novamente.'),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -60,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Por favor, insira seu e-mail."),
+          content: Text('Por favor, insira seu e-mail.'),
           backgroundColor: Colors.orangeAccent,
         ),
       );
@@ -75,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Link de redefinição enviado para seu e-mail!"),
+          content: Text('Link de redefinição enviado para seu e-mail!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -101,18 +102,18 @@ class _LoginPageState extends State<LoginPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: const Text("Redefinir Senha"),
+          title: const Text('Redefinir Senha'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                  "Digite seu e-mail para receber um link de redefinição."),
+                  'Digite seu e-mail para receber um link de redefinição.'),
               const SizedBox(height: 15),
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  labelText: "E-mail",
+                  labelText: 'E-mail',
                   prefixIcon: Icon(Icons.email_outlined),
                 ),
               ),
@@ -121,13 +122,13 @@ class _LoginPageState extends State<LoginPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancelar"),
+              child: const Text('Cancelar'),
             ),
             ElevatedButton(
               onPressed: () {
                 _resetPassword(emailController.text);
               },
-              child: const Text("Enviar"),
+              child: const Text('Enviar'),
             ),
           ],
         );
@@ -169,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                     Image.asset('assets/logo.png', height: 80),
                     const SizedBox(height: 15),
                     const Text(
-                      "Login",
+                      'Login',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 24,
@@ -179,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 5),
                     const Text(
-                      "Use a conta abaixo para fazer login",
+                      'Use a conta abaixo para fazer login',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black54),
                     ),
@@ -189,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.email_outlined),
-                        labelText: "Email",
+                        labelText: 'Email',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -201,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.lock_outline),
-                        labelText: "Senha",
+                        labelText: 'Senha',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -239,7 +240,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             )
                           : const Text(
-                              "Logar",
+                              'Logar',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.white,
@@ -249,7 +250,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 10),
                     TextButton(
                       onPressed: _isLoading ? null : _showPasswordResetDialog,
-                      child: const Text("Esqueceu sua senha?"),
+                      child: const Text('Esqueceu sua senha?'),
                     ),
                     const SizedBox(height: 10),
                     OutlinedButton.icon(
@@ -268,7 +269,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       icon: const Icon(Icons.person_add),
-                      label: const Text("Cadastrar"),
+                      label: const Text('Cadastrar'),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -278,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(width: 8),
                         DropdownButton<String>(
                           value: _selectedLanguage,
-                          items: ["Português", "Inglês", "Espanhol"]
+                          items: ['Português', 'Inglês', 'Espanhol']
                               .map(
                                 (lang) => DropdownMenuItem(
                                   value: lang,

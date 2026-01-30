@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/notification_permission_service.dart';
+import 'package:magnojet/services/notification_permission_service.dart';
 
 class NotificationSettingsTile extends StatefulWidget {
   final String title;
@@ -278,7 +278,7 @@ class _NotificationSettingsTileState extends State<NotificationSettingsTile> {
         decoration: BoxDecoration(
           color: Colors.blue.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.blue.shade100, width: 1),
+          border: Border.all(color: Colors.blue.shade100),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

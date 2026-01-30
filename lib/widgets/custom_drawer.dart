@@ -36,7 +36,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
-    String displayUserName = userName.isNotEmpty ? userName : 'Usuário';
+    final String displayUserName = userName.isNotEmpty ? userName : 'Usuário';
     final int currentYear = DateTime.now().year;
 
     return Drawer(
@@ -61,7 +61,9 @@ class CustomDrawer extends StatelessWidget {
                     ],
                   ),
                   border: Border(
-                    bottom: BorderSide(color: Colors.white24, width: 1),
+                    bottom: BorderSide(
+                      color: Colors.white24,
+                    ),
                   ),
                 ),
                 child: Row(
@@ -92,7 +94,7 @@ class CustomDrawer extends StatelessWidget {
                     ],
                   ),
                   border: Border(
-                    bottom: BorderSide(color: Colors.white24, width: 1),
+                    bottom: BorderSide(color: Colors.white24),
                   ),
                 ),
                 child: isLoadingUser
@@ -254,7 +256,7 @@ class CustomDrawer extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: const BoxDecoration(
                   border: Border(
-                    top: BorderSide(color: Colors.white24, width: 1),
+                    top: BorderSide(color: Colors.white24),
                   ),
                 ),
                 child: Column(
@@ -296,7 +298,7 @@ class CustomDrawer extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '© $currentYear Todos os direitos reservados',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white30,
                         fontSize: 10,
                       ),

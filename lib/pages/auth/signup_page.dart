@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:magnojet/pages/home/home_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../home/home_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -24,7 +24,7 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("As senhas não correspondem!"),
+          content: Text('As senhas não correspondem!'),
           backgroundColor: Colors.orangeAccent,
         ),
       );
@@ -34,7 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("O campo Nome é obrigatório!"),
+          content: Text('O campo Nome é obrigatório!'),
           backgroundColor: Colors.orangeAccent,
         ),
       );
@@ -103,7 +103,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Criar Conta"),
+        title: const Text('Criar Conta'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.white,
@@ -132,7 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Image.asset('assets/logo.png', height: 80),
                     const SizedBox(height: 15),
                     const Text(
-                      "Cadastrar",
+                      'Cadastrar',
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -143,7 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       keyboardType: TextInputType.name,
                       textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
-                        labelText: "Nome Completo",
+                        labelText: 'Nome Completo',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15)),
                       ),
@@ -153,7 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: "Email",
+                        labelText: 'Email',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15)),
                       ),
@@ -163,7 +163,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        labelText: "Senha",
+                        labelText: 'Senha',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15)),
                         suffixIcon: IconButton(
@@ -180,7 +180,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _confirmPasswordController,
                       obscureText: _obscureConfirmPassword,
                       decoration: InputDecoration(
-                        labelText: "Confirmar Senha",
+                        labelText: 'Confirmar Senha',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15)),
                         suffixIcon: IconButton(
@@ -204,7 +204,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: _isLoading ? null : _signUp,
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("Cadastrar",
+                          : const Text('Cadastrar',
                               style:
                                   TextStyle(fontSize: 18, color: Colors.white)),
                     ),

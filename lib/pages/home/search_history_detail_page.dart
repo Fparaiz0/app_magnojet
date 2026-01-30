@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../models/search_history_model.dart';
-import '../../models/tip_selection_model.dart';
+import 'package:magnojet/models/search_history_model.dart';
+import 'package:magnojet/models/tip_selection_model.dart';
+import 'package:magnojet/pages/home/tip_details_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'tip_details_page.dart';
 
 class SearchHistoryDetailPage extends StatefulWidget {
   final SearchHistoryModel history;
@@ -160,7 +160,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: textSecondary,
                 fontWeight: FontWeight.w500,
@@ -169,7 +169,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
           ),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: textPrimary,
@@ -302,7 +302,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
                               children: [
                                 Text(
                                   '${tipData['name']} - ${tipData['model']}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     color: textPrimary,
@@ -344,7 +344,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         'Clique para ver detalhes completos',
                         style: TextStyle(
                           fontSize: 11,
@@ -380,7 +380,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
           const SizedBox(width: 4),
           Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               color: textSecondary,
               fontWeight: FontWeight.w500,
@@ -419,7 +419,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: textSecondary,
               fontSize: 14,
             ),
@@ -501,7 +501,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Parâmetros da Busca',
                             style: TextStyle(
                               fontSize: 18,
@@ -539,7 +539,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
                                 color: Colors.grey.shade50,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Text(
+                              child: const Text(
                                 'Parâmetros não disponíveis',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -565,7 +565,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
                         children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 'Resultados',
                                 style: TextStyle(
                                   fontSize: 18,
@@ -583,7 +583,7 @@ class _SearchHistoryDetailPageState extends State<SearchHistoryDetailPage> {
                                 ),
                                 child: Text(
                                   '${widget.history.resultCount ?? 0} encontrados',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: textSecondary,
                                     fontWeight: FontWeight.w600,

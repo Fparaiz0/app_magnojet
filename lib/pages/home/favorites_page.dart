@@ -1,21 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:magnojet/models/tip_selection_model.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/catalog_page.dart';
+import 'package:magnojet/pages/home/history_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/pages/home/profile_page.dart';
+import 'package:magnojet/pages/home/settings_page.dart';
+import 'package:magnojet/pages/home/tip_details_page.dart';
+import 'package:magnojet/pages/home/tip_selection_page.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'dart:math' as math;
-import '../../models/tip_selection_model.dart';
-import '../../widgets/custom_drawer.dart';
-import '../auth/login_page.dart';
-import 'home_page.dart';
-import 'tip_details_page.dart';
-import 'tip_selection_page.dart';
-import 'settings_page.dart';
-import 'profile_page.dart';
-import 'history_page.dart';
-import 'catalog_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -294,9 +295,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
     final tamanhoGotaRel = selecaoData['tamanho_gota'];
 
     if (tamanhoGotaRel is List && tamanhoGotaRel.isNotEmpty) {
-      final firstItem = tamanhoGotaRel[0];
+      final firstItem = tamanhoGotaRel[0] as Map<String, dynamic>;
       dropletSizeId = localSafeParseInt(firstItem['id']);
-    } else if (tamanhoGotaRel is Map) {
+    } else if (tamanhoGotaRel is Map<String, dynamic>) {
       dropletSizeId = localSafeParseInt(tamanhoGotaRel['id']);
     }
 
@@ -562,7 +563,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
+        builder: (context) => const AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1564,7 +1565,6 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: 70,
@@ -1572,7 +1572,7 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade200, width: 1),
+                  border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: tip.imageUrl != null && tip.imageUrl!.isNotEmpty
                     ? ClipRRect(
@@ -1726,7 +1726,6 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2016,7 +2015,6 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
                           : RefreshIndicator(
                               onRefresh: _loadFavorites,
                               color: primaryColor,
-                              displacement: 40,
                               child: ListView.builder(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8),

@@ -1,18 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import '../../widgets/custom_drawer.dart';
-import '../auth/login_page.dart';
-import 'home_page.dart';
-import 'favorites_page.dart';
-import 'tip_selection_page.dart';
-import 'settings_page.dart';
 import 'dart:async';
-import 'history_page.dart';
-import 'catalog_page.dart';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/catalog_page.dart';
+import 'package:magnojet/pages/home/favorites_page.dart';
+import 'package:magnojet/pages/home/history_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/pages/home/settings_page.dart';
+import 'package:magnojet/pages/home/tip_selection_page.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -136,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         setState(() => _userLocation = 'Serviço de localização desativado');
         return;
@@ -156,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
         return;
       }
 
-      Position position = await Geolocator.getCurrentPosition(
+      final Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
         ),
@@ -164,14 +165,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
       await setLocaleIdentifier('pt_BR');
 
-      List<Placemark> placemarks = await placemarkFromCoordinates(
+      final List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
 
       String location = '';
       if (placemarks.isNotEmpty) {
-        Placemark place = placemarks.first;
+        final Placemark place = placemarks.first;
 
         if (place.subAdministrativeArea != null &&
             place.subAdministrativeArea!.isNotEmpty) {
@@ -639,7 +640,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     if (_isLoadingLocation)
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                         height: 12,
                         child: CircularProgressIndicator(
@@ -648,7 +649,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.refresh_rounded,
                         size: 16,
                         color: primaryColor,
@@ -835,8 +836,8 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: const Color.fromARGB(255, 0, 64, 255), width: 2),
+          borderSide: const BorderSide(
+              color: Color.fromARGB(255, 0, 64, 255), width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -963,7 +964,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryColor, width: 2),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
         ),
         filled: true,
         fillColor: enabled ? Colors.grey.shade50 : Colors.grey.shade200,
@@ -1019,7 +1020,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     if (isLoading)
-                      SizedBox(
+                      const SizedBox(
                         width: 14,
                         height: 14,
                         child: CircularProgressIndicator(

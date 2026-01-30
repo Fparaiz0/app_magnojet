@@ -1,5 +1,5 @@
+import 'package:magnojet/models/search_history_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/search_history_model.dart';
 
 class SearchHistoryService {
   final SupabaseClient _supabase = Supabase.instance.client;

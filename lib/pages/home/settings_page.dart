@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/catalog_page.dart';
+import 'package:magnojet/pages/home/favorites_page.dart';
+import 'package:magnojet/pages/home/history_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/pages/home/profile_page.dart';
+import 'package:magnojet/pages/home/tip_selection_page.dart';
+import 'package:magnojet/services/notification_permission_service.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
+import 'package:magnojet/widgets/notification_settings_tile.dart';
 import 'package:path_provider/path_provider.dart';
-import '../../widgets/notification_settings_tile.dart';
-import '../../widgets/custom_drawer.dart';
-import '../auth/login_page.dart';
-import 'home_page.dart';
-import 'favorites_page.dart';
-import 'tip_selection_page.dart';
-import 'profile_page.dart';
-import 'history_page.dart';
-import 'catalog_page.dart';
-import '../../services/notification_permission_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -243,7 +243,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     : null,
               ),
               child: _userAvatarUrl == null
-                  ? Icon(
+                  ? const Icon(
                       Icons.person_rounded,
                       size: 30,
                       color: primaryColor,
@@ -284,7 +284,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  Row(
+                  const Row(
                     children: [
                       Text(
                         'Ver perfil completo',
@@ -294,7 +294,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Icon(
                         Icons.arrow_forward_rounded,
                         size: 12,
@@ -329,13 +329,13 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.notifications_rounded, color: primaryColor, size: 20),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Notificações',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF15325A),
@@ -345,12 +345,8 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 16),
           NotificationSettingsTile(
-            title: 'Notificações',
-            description: 'Receba notificações importantes',
-            icon: Icons.notifications_active_rounded,
             activeColor: primaryColor,
             inactiveColor: Colors.grey[400]!,
-            showStatus: true,
             onToggleChanged: (enabled) {
               setState(() {});
               _saveNotificationPreference(enabled);
@@ -372,17 +368,17 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child:
-                      Icon(Icons.sync_rounded, size: 20, color: primaryColor),
+                  child: const Icon(Icons.sync_rounded,
+                      size: 20, color: primaryColor),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Sincronização automática',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.black87,
@@ -793,7 +789,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           content:
                                               Text('Erro ao limpar cache: $e'),
                                           backgroundColor: Colors.red,
-                                          duration: Duration(seconds: 3),
+                                          duration: const Duration(seconds: 3),
                                         ),
                                       );
                                     }

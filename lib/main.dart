@@ -1,28 +1,29 @@
 import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import '../services/notification_permission_service.dart';
+import 'package:geolocator/geolocator.dart';
 
-import 'pages/auth/login_page.dart';
-import 'pages/home/home_page.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/services/notification_permission_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await NotificationPermissionService().initialize();
 
-  await dotenv.load(fileName: ".env");
+  await dotenv.load();
 
   final supabaseUrl = dotenv.env['SUPABASE_URL'];
   final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
 
   if (supabaseUrl == null || supabaseAnonKey == null) {
     throw Exception(
-        "Faltam SUPABASE_URL ou SUPABASE_ANON_KEY no arquivo .env.");
+        'Faltam SUPABASE_URL ou SUPABASE_ANON_KEY no arquivo .env.');
   }
 
   await Supabase.initialize(
@@ -87,7 +88,7 @@ class _MainAppState extends State<MainApp> {
 
   Future<void> _initConnectivity() async {
     try {
-      var connectivityResult = await _connectivity.checkConnectivity();
+      final connectivityResult = await _connectivity.checkConnectivity();
       _updateConnectionStatus(connectivityResult);
 
       _subscription = _connectivity.onConnectivityChanged.listen(
@@ -112,7 +113,7 @@ class _MainAppState extends State<MainApp> {
 
   Future<void> _checkConnection() async {
     try {
-      var connectivityResult = await _connectivity.checkConnectivity();
+      final connectivityResult = await _connectivity.checkConnectivity();
       _updateConnectionStatus(connectivityResult);
     } catch (_) {}
   }
@@ -265,7 +266,7 @@ class _AuthGateState extends State<AuthGate> {
         return;
       }
 
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         _showLocationServiceDisabledAlert();
         await _saveDefaultLocation(user.id);
@@ -288,14 +289,14 @@ class _AuthGateState extends State<AuthGate> {
         return;
       }
 
-      Position position = await Geolocator.getCurrentPosition(
+      final Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
           timeLimit: Duration(seconds: 10),
         ),
       );
 
-      String location = await _getLocationFromCoordinates(
+      final String location = await _getLocationFromCoordinates(
         position.latitude,
         position.longitude,
       );
@@ -315,7 +316,7 @@ class _AuthGateState extends State<AuthGate> {
     try {
       await setLocaleIdentifier('pt_BR');
 
-      List<Placemark> placemarks = await placemarkFromCoordinates(
+      final List<Placemark> placemarks = await placemarkFromCoordinates(
         lat,
         lng,
       );
@@ -324,7 +325,7 @@ class _AuthGateState extends State<AuthGate> {
         return '${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
       }
 
-      Placemark place = placemarks.first;
+      final Placemark place = placemarks.first;
       String location = '';
 
       if (place.subAdministrativeArea != null &&

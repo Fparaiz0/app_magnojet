@@ -164,10 +164,6 @@ class NotificationPermissionService {
 
   Future<PermissionRequestResult> requestPermission() async {
     try {
-      if (kDebugMode) {
-        print('🔔 Solicitando permissão de notificação...');
-      }
-
       final PermissionStatus status = await Permission.notification.request();
 
       await _markPermissionRequested();
@@ -178,10 +174,6 @@ class NotificationPermissionService {
         permanentlyDenied: status.isPermanentlyDenied,
         status: status.toString(),
       );
-
-      if (kDebugMode) {
-        print('📋 Resultado da permissão: ${result.granted ? "✅" : "❌"}');
-      }
 
       return result;
     } catch (e) {
@@ -212,10 +204,6 @@ class NotificationPermissionService {
       }
 
       await _saveUserPreference(enable);
-
-      if (kDebugMode) {
-        print('💾 Preferência salva: $enable');
-      }
 
       return ToggleResult(
         success: true,
@@ -248,10 +236,6 @@ class NotificationPermissionService {
         shouldShowRationale: await _shouldShowRationale(),
       );
 
-      if (kDebugMode) {
-        print('📊 Configurações carregadas: $settings');
-      }
-
       return settings;
     } catch (e) {
       if (kDebugMode) {
@@ -281,13 +265,7 @@ class NotificationPermissionService {
   Future<void> openAppSettings() async {
     try {
       await openAppSettings();
-      if (kDebugMode) {
-        print('⚙️ Configurações do app abertas');
-      }
     } catch (e) {
-      if (kDebugMode) {
-        print('❌ Erro ao abrir configurações: $e');
-      }
       rethrow;
     }
   }
@@ -362,10 +340,6 @@ class NotificationPermissionService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_prefKey);
       await prefs.remove(_permissionRequestedKey);
-
-      if (kDebugMode) {
-        print('🔄 Configurações resetadas');
-      }
     } catch (e) {
       if (kDebugMode) {
         print('❌ Erro ao resetar configurações: $e');

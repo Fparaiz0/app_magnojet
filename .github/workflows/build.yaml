@@ -1,12 +1,12 @@
-name: Analyze
+name: Build
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  analyze:
-    name: Analyze
+  build-android:
+    name: Build Android Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -29,5 +29,12 @@ jobs:
           echo "SUPABASE_URL=$SUPABASE_URL" >> .env
           echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
 
-      - name: Flutter Analyze
-        run: flutter analyze
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v6
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7

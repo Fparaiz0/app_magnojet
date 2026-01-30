@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:magnojet/models/search_history_model.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/catalog_page.dart';
+import 'package:magnojet/pages/home/favorites_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/pages/home/profile_page.dart';
+import 'package:magnojet/pages/home/search_history_detail_page.dart';
+import 'package:magnojet/pages/home/settings_page.dart';
+import 'package:magnojet/pages/home/tip_selection_page.dart';
+import 'package:magnojet/services/search_history_service.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../services/search_history_service.dart';
-import '../../models/search_history_model.dart';
-import '../../widgets/custom_drawer.dart';
-import '../auth/login_page.dart';
-import '../home/home_page.dart';
-import 'tip_selection_page.dart';
-import 'favorites_page.dart';
-import 'profile_page.dart';
-import 'settings_page.dart';
-import 'search_history_detail_page.dart';
-import 'catalog_page.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -105,7 +105,7 @@ class _HistoryPageState extends State<HistoryPage> {
           'Limpar Histórico',
           style: TextStyle(color: textPrimary),
         ),
-        content: Text(
+        content: const Text(
           'Tem certeza que deseja limpar todo o histórico de buscas?',
           style: TextStyle(color: textSecondary),
         ),
@@ -115,7 +115,7 @@ class _HistoryPageState extends State<HistoryPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               'Cancelar',
               style: TextStyle(color: textSecondary),
             ),
@@ -281,7 +281,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             Expanded(
                               child: Text(
                                 _formatSearchDate(history.searchDate),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                   color: textPrimary,
@@ -341,7 +341,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Text(
+                            const Text(
                               'Clique para ver detalhes',
                               style: TextStyle(
                                 fontSize: 12,
@@ -380,11 +380,11 @@ class _HistoryPageState extends State<HistoryPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        title: Text(
+        title: const Text(
           'Excluir Busca',
           style: TextStyle(color: textPrimary),
         ),
-        content: Text(
+        content: const Text(
           'Tem certeza que deseja excluir esta busca do histórico?',
           style: TextStyle(color: textSecondary),
         ),
@@ -394,7 +394,7 @@ class _HistoryPageState extends State<HistoryPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
+            child: const Text(
               'Cancelar',
               style: TextStyle(color: textSecondary),
             ),
@@ -487,7 +487,7 @@ class _HistoryPageState extends State<HistoryPage> {
               color: Colors.grey.shade300,
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'Nenhuma busca realizada',
               style: TextStyle(
                 fontSize: 18,
@@ -496,7 +496,7 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               'Suas buscas de pontas aparecerão aqui',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -644,11 +644,11 @@ class _HistoryPageState extends State<HistoryPage> {
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Text(
+          title: const Text(
             'Confirmar Saída',
             style: TextStyle(color: textPrimary),
           ),
-          content: Text(
+          content: const Text(
             'Tem certeza que deseja sair do aplicativo?',
             style: TextStyle(color: textSecondary),
           ),
@@ -658,7 +658,7 @@ class _HistoryPageState extends State<HistoryPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(
+              child: const Text(
                 'Cancelar',
                 style: TextStyle(color: textSecondary),
               ),

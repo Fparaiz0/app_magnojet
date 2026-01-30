@@ -1,21 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:magnojet/models/tip_selection_model.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/catalog_page.dart';
+import 'package:magnojet/pages/home/favorites_page.dart';
+import 'package:magnojet/pages/home/history_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/pages/home/profile_page.dart';
+import 'package:magnojet/pages/home/settings_page.dart';
+import 'package:magnojet/pages/home/tip_selection_page.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:http/http.dart' as http;
-import 'dart:math' as math;
-import '../../models/tip_selection_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../widgets/custom_drawer.dart';
-import 'favorites_page.dart';
-import '../auth/login_page.dart';
-import 'home_page.dart';
-import 'tip_selection_page.dart';
-import 'settings_page.dart';
-import 'history_page.dart';
-import 'catalog_page.dart';
-import 'profile_page.dart';
 
 class TipDetailsPage extends StatefulWidget {
   final TipModel tip;
@@ -1834,7 +1835,6 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -1850,7 +1850,6 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
                     ],
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         '${widget.tip.name} - ${widget.tip.model}',
@@ -1869,7 +1868,7 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
                           color: primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Ponta Recomendada',
                           style: TextStyle(
                             fontSize: 12,
@@ -1888,9 +1887,9 @@ data:image/svg+xml;base64,${base64Encode(utf8.encode('''<svg xmlns="http://www.w
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: Colors.amber),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: const [
+                            children: [
                               Icon(Icons.bookmark_rounded,
                                   size: 14, color: Colors.amber),
                               SizedBox(width: 4),

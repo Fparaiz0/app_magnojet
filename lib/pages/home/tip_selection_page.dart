@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:magnojet/models/tip_selection_model.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/catalog_page.dart';
+import 'package:magnojet/pages/home/favorites_page.dart';
+import 'package:magnojet/pages/home/history_page.dart';
+import 'package:magnojet/pages/home/home_page.dart';
+import 'package:magnojet/pages/home/profile_page.dart';
+import 'package:magnojet/pages/home/settings_page.dart';
+import 'package:magnojet/pages/home/tip_details_page.dart';
+import 'package:magnojet/services/search_history_service.dart';
+import 'package:magnojet/services/tip_selection_service.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../models/tip_selection_model.dart';
-import '../../../services/tip_selection_service.dart';
-import '../../../services/search_history_service.dart';
-import 'home_page.dart';
-import 'tip_details_page.dart';
-import 'favorites_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../widgets/custom_drawer.dart';
-import '../auth/login_page.dart';
-import 'settings_page.dart';
-import 'profile_page.dart';
-import 'history_page.dart';
-import 'catalog_page.dart';
 
 class TipSelectionPage extends StatefulWidget {
   const TipSelectionPage({super.key});
@@ -483,7 +483,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 ],
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Icon(
               icon,
@@ -597,7 +596,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                       controller: controller,
                       textAlign: TextAlign.center,
                       keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
+                          const TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
@@ -706,13 +705,13 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
             Icon(Icons.opacity_rounded, color: primaryColor),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               'Vazão',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: primaryColor,
@@ -1204,7 +1203,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                       color: primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.verified_rounded,
                       color: primaryColor,
                       size: 20,
@@ -1235,7 +1234,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
               ),
               IconButton(
                 onPressed: _resetForm,
-                icon: Icon(
+                icon: const Icon(
                   Icons.refresh_rounded,
                   color: primaryColor,
                   size: 20,
@@ -1301,7 +1300,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
             ),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 40,
                   height: 40,
                   child: CircularProgressIndicator(
@@ -1310,7 +1309,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'Buscando pontas...',
                   style: TextStyle(
                     fontSize: 16,
@@ -1731,7 +1730,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: nonPWMItems.asMap().entries.map((entry) {
                     final index = entry.key;
                     final item = entry.value;
@@ -1757,8 +1755,8 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8, left: 4),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 8, left: 4),
                       child: Text(
                         'Tecnologia PWM',
                         style: TextStyle(
@@ -1866,10 +1864,10 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.filter_alt_rounded, color: primaryColor, size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Filtrar por Tamanho de Gota',
                   style: TextStyle(
@@ -1916,7 +1914,6 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                     borderRadius: BorderRadius.circular(20),
                     side: BorderSide(
                       color: isSelected ? primaryColor : Colors.grey.shade300,
-                      width: 1,
                     ),
                   ),
                 );

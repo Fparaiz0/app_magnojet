@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:magnojet/pages/auth/login_page.dart';
+import 'package:magnojet/pages/home/catalog_page.dart';
+import 'package:magnojet/pages/home/favorites_page.dart';
+import 'package:magnojet/pages/home/history_page.dart';
+import 'package:magnojet/pages/home/profile_page.dart';
+import 'package:magnojet/pages/home/settings_page.dart';
+import 'package:magnojet/pages/home/tip_selection_page.dart';
+import 'package:magnojet/widgets/custom_drawer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../auth/login_page.dart';
-import 'tip_selection_page.dart';
-import '../../widgets/custom_drawer.dart';
-import 'favorites_page.dart';
-import 'settings_page.dart';
-import 'profile_page.dart';
-import 'history_page.dart';
-import 'catalog_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -145,7 +145,6 @@ class _HomePageState extends State<HomePage> {
               color: isDisabled
                   ? Colors.grey.shade200
                   : color.withValues(alpha: 0.2),
-              width: 1,
             ),
           ),
           child: Column(
@@ -207,7 +206,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildLoadingState() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -219,7 +218,7 @@ class _HomePageState extends State<HomePage> {
               color: primaryColor,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Carregando dados...',
             style: TextStyle(
@@ -362,7 +361,7 @@ class _HomePageState extends State<HomePage> {
                                       : null,
                                 ),
                                 child: _userAvatarUrl == null
-                                    ? Icon(
+                                    ? const Icon(
                                         Icons.person_rounded,
                                         color: primaryColor,
                                         size: 22,
@@ -449,7 +448,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
-                          isDisabled: false,
                         ),
                         _buildFeatureCard(
                           icon: Icons.bookmark_rounded,
@@ -463,7 +461,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
-                          isDisabled: false,
                         ),
                         _buildFeatureCard(
                           icon: Icons.history_rounded,
@@ -477,7 +474,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
-                          isDisabled: false,
                         ),
                         _buildFeatureCard(
                           icon: Icons.book_rounded,
@@ -491,7 +487,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
-                          isDisabled: false,
                         ),
                         _buildFeatureCard(
                           icon: Icons.calculate_rounded,

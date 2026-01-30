@@ -1,5 +1,5 @@
+import 'package:magnojet/models/tip_selection_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/tip_selection_model.dart';
 
 class TipService {
   final SupabaseClient _supabase = Supabase.instance.client;

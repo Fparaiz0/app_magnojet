@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import '../models/notification_model.dart';
+import 'package:magnojet/models/notification_model.dart';
 
 abstract class NotificationService {
   Future<void> initialize();

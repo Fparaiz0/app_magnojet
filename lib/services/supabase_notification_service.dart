@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:magnojet/models/notification_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
-import '../models/notification_model.dart';
 
 abstract class NotificationService {
   Future<void> initialize();
@@ -92,9 +93,6 @@ class SupabaseNotificationService implements NotificationService {
 
       final DarwinInitializationSettings initializationSettingsIOS =
           DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
         onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
       );
 
@@ -132,15 +130,7 @@ class SupabaseNotificationService implements NotificationService {
   Future<void> _setupFirebaseMessaging() async {
     try {
       final NotificationSettings settings =
-          await _firebaseMessaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
+          await _firebaseMessaging.requestPermission();
 
       debugPrint('📱 Status da permissão: ${settings.authorizationStatus}');
 
@@ -375,10 +365,6 @@ class SupabaseNotificationService implements NotificationService {
         importance: Importance.max,
         priority: Priority.high,
         ticker: 'ticker',
-        showWhen: true,
-        autoCancel: true,
-        enableVibration: true,
-        playSound: true,
       );
 
       const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -568,7 +554,7 @@ class SupabaseNotificationService implements NotificationService {
 
     try {
       if (response.payload != null && response.payload!.isNotEmpty) {
-        final data = json.decode(response.payload!);
+        final data = json.decode(response.payload!) as Map<String, dynamic>;
 
         if (data['notification_id'] != null) {
           await markAsRead(data['notification_id']);

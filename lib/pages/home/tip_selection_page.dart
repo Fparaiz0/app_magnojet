@@ -1609,7 +1609,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                       subtitle:
                                           'Ajuste os valores usando os botões + e - ou digite manualmente'),
                                   _buildIncrementDecrementSelection(
-                                    label: 'Pressão',
+                                    label: 'Pressão em bar',
                                     currentValue: _pressure,
                                     unit: 'bar',
                                     icon: Icons.compress_rounded,
@@ -1621,7 +1621,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                   ),
                                   _buildFlowRateSelection(),
                                   _buildIncrementDecrementSelection(
-                                    label: 'Espaçamento',
+                                    label: 'Espaçamento em cm',
                                     currentValue: _spacing,
                                     unit: 'cm',
                                     icon: Icons.straighten_rounded,
@@ -1634,7 +1634,7 @@ class _TipSelectionPageState extends State<TipSelectionPage> {
                                     controller: _spacingController,
                                   ),
                                   _buildIncrementDecrementSelection(
-                                    label: 'Velocidade',
+                                    label: 'Velocidade em km/h',
                                     currentValue: _speed,
                                     unit: 'km/h',
                                     icon: Icons.speed_rounded,

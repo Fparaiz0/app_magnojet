@@ -31,28 +31,11 @@
 
 ---
 
-# 🎨 Application Screens
+# 📹 Application Video
 
-  <p align="center" valign="top" >
-    <img src="assets/images/page_singIn.png" width="250" title="Login Screen">
-    <img src="assets/images/page_singUp.png" width="250" title="Register Screen">
-    <img src="assets/images/page_forgotPassword.png" width="250" title="Password Recovery Screen">
-  </p>
-  <p align="center" valign="top" >
-    <img src="assets/images/page_home.png" width="250" title="Home Screen">
-    <img src="assets/images/page_drawer.png" width="250" title="Drawer Screen">
-    <img src="assets/images/page_tip_selection.png" width="250" title="Nozzle Selection Screen">
-  </p>
-  <p align="center" valign="top" >
-    <img src="assets/images/page_tip_details.png" width="250" title="Tip Details Screen">
-    <img src="assets/images/page_favorites.png" width="250" title="Favorites Screen">
-    <img src="assets/images/page_history.png" width="250" title="History Screen">
-  </p>
-  <p align="center" valign="top" >
-    <img src="assets/images/page_catalog.png" width="250" title="Catalog Screen">
-    <img src="assets/images/page_settings.png" width="250" title="Settings Screen">
-    <img src="assets/images/page_profile.png" width="250" title="Profile Screen">
-  </p>
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/df304be0-898c-44fa-ba22-2158412d4b5e"></video>
+</p>
 
 ---
 

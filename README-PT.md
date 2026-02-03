@@ -31,28 +31,11 @@
 
 ---
 
-# 🎨 Telas do Aplicativo
+# 📹 Video do Aplicativo
 
-  <p align="center" valign="top" >
-    <img src="assets/images/page_singIn.png" width="250" title="Tela de Login">
-    <img src="assets/images/page_singUp.png" width="250" title="Tela de Cadastro">
-    <img src="assets/images/page_forgotPassword.png" width="250" title="Tela de Recuperação de Senha">
-  </p>
-  <p align="center" valign="top" >
-    <img src="assets/images/page_home.png" width="250" title="Tela Inicial">
-    <img src="assets/images/page_drawer.png" width="250" title="Drawer">
-    <img src="assets/images/page_tip_selection.png" width="250" title="Tela de Seleção de pontas">
-  </p>
-  <p align="center" valign="top" >
-    <img src="assets/images/page_tip_details.png" width="250" title="Tela de Detalhes da ponta">
-    <img src="assets/images/page_favorites.png" width="250" title="Tela de Favoritas">
-    <img src="assets/images/page_history.png" width="250" title="Tela de Histórico">
-  </p>
-  <p align="center" valign="top" >
-    <img src="assets/images/page_catalog.png" width="250" title="Tela de Catalogo">
-    <img src="assets/images/page_settings.png" width="250" title="Tela de Configurações">
-    <img src="assets/images/page_profile.png" width="250" title="Tela de Perfil">
-  </p>
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/df304be0-898c-44fa-ba22-2158412d4b5e"></video>
+</p>
 
 ---
 

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:magnojet/pages/auth/login_page.dart';
 import 'package:magnojet/pages/home/home_page.dart';
 import 'package:magnojet/services/notification_permission_service.dart';
@@ -15,6 +15,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await NotificationPermissionService().initialize();
+
+  await initializeDateFormatting('pt_BR');
 
   await dotenv.load();
 

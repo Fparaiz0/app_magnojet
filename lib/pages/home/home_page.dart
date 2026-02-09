@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
 
   late Timer _timer;
-  final String _currentDateTime = '';
+  DateTime _currentTime = DateTime.now();
 
   static const primaryColor = Color(0xFF15325A);
   static const backgroundColor = Color(0xFFF5F7FA);
@@ -34,21 +34,28 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadUserData();
-    _startTimer();
+    _startPreciseTimer();
   }
 
-  void _startTimer() {
-    _updateDateTime();
+  void _startPreciseTimer() {
+    _updateTime();
 
-    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      _updateDateTime();
+    final now = DateTime.now();
+    final delay = Duration(milliseconds: 1000 - now.millisecond);
+
+    Future.delayed(delay, () {
+      _updateTime();
+
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        _updateTime();
+      });
     });
   }
 
-  void _updateDateTime() {
+  void _updateTime() {
     if (mounted) {
       setState(() {
-        DateFormat('dd/MM/yyyy - HH:mm').format(DateTime.now());
+        _currentTime = DateTime.now();
       });
     }
   }
@@ -57,6 +64,27 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  String _formatarDiaDaSemana(DateTime data) {
+    switch (data.weekday) {
+      case 1:
+        return 'Segunda-feira';
+      case 2:
+        return 'Terça-feira';
+      case 3:
+        return 'Quarta-feira';
+      case 4:
+        return 'Quinta-feira';
+      case 5:
+        return 'Sexta-feira';
+      case 6:
+        return 'Sábado';
+      case 7:
+        return 'Domingo';
+      default:
+        return '';
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -416,13 +444,27 @@ class _HomePageState extends State<HomePage> {
                                         color: primaryColor,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      _currentDateTime,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade500,
-                                      ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${_formatarDiaDaSemana(_currentTime)}, ${DateFormat('dd/MM/yyyy', 'pt_BR').format(_currentTime)}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey.shade500,
+                                          ),
+                                        ),
+                                        Text(
+                                          DateFormat('HH:mm:ss', 'pt_BR')
+                                              .format(_currentTime),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: primaryColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),

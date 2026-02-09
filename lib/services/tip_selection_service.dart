@@ -188,18 +188,20 @@ class TipService {
     double targetFlowRate,
     double targetSpacing,
   ) {
-    final modelGroups = <String, List<TipModel>>{};
+    final tipGroups = <String, List<TipModel>>{};
+
     for (var tip in allTips) {
-      final modelName = tip.model;
-      if (!modelGroups.containsKey(modelName)) {
-        modelGroups[modelName] = [];
+      final key = '${tip.name}_${tip.model}';
+
+      if (!tipGroups.containsKey(key)) {
+        tipGroups[key] = [];
       }
-      modelGroups[modelName]!.add(tip);
+      tipGroups[key]!.add(tip);
     }
 
     final result = <TipModel>[];
 
-    modelGroups.forEach((model, tips) {
+    tipGroups.forEach((key, tips) {
       if (tips.length == 1) {
         result.add(tips.first);
       } else {

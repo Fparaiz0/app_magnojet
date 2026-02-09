@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:magnojet/pages/auth/login_page.dart';
 import 'package:magnojet/pages/home/catalog_page.dart';
 import 'package:magnojet/pages/home/favorites_page.dart';
@@ -22,6 +24,9 @@ class _HomePageState extends State<HomePage> {
   String? _userAvatarUrl;
   bool _isLoading = true;
 
+  late Timer _timer;
+  final String _currentDateTime = '';
+
   static const primaryColor = Color(0xFF15325A);
   static const backgroundColor = Color(0xFFF5F7FA);
 
@@ -29,6 +34,29 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadUserData();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _updateDateTime();
+
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      _updateDateTime();
+    });
+  }
+
+  void _updateDateTime() {
+    if (mounted) {
+      setState(() {
+        DateFormat('dd/MM/yyyy - HH:mm').format(DateTime.now());
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -386,6 +414,14 @@ class _HomePageState extends State<HomePage> {
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                         color: primaryColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _currentDateTime,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade500,
                                       ),
                                     ),
                                   ],
